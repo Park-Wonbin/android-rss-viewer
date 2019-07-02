@@ -1,5 +1,9 @@
 language: android
-dist: trusty
+jdk: 
+  - oraclejdk8
+  - oraclejdk9
+sudo: false
+    
 android:
   components:
     # Uncomment the lines below if you want to
@@ -21,8 +25,6 @@ android:
     # Emulator settings
     - sys-img-armeabi-v7a-android-28
 
-before_install:
-  - yes | sdkmanager "platforms;android-28"
 before_script:
   - echo no | android create avd --force -n test -t android-28 --abi armeabi-v7a
   - emulator -avd test -no-skin -no-audio -no-window &
