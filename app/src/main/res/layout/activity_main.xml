@@ -13,16 +13,27 @@
         android:layout_margin="20dp"
         app:cardCornerRadius="20dp"
         app:cardElevation="30dp"
-        app:cardBackgroundColor="#fff"
+        app:cardBackgroundColor="#03A9F4"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-
-        <androidx.viewpager.widget.ViewPager
-            android:id="@+id/viewPager"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+        
+        <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent">
+    
+            <androidx.viewpager.widget.ViewPager
+                android:id="@+id/viewPager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+    
+            <me.relex.circleindicator.CircleIndicator
+                android:id="@+id/indicator"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_gravity="top"
+                android:layout_marginBottom="20dp"/>
+            
+        </FrameLayout>
 
     </androidx.cardview.widget.CardView>
 
