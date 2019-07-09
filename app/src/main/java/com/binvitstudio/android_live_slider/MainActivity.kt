@@ -2,11 +2,12 @@ package com.binvitstudio.android_live_slider
 
 import android.os.Bundle
 import android.os.Handler
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.size
 import kotlinx.android.synthetic.main.activity_main.*
 import me.relex.circleindicator.CircleIndicator
 import androidx.viewpager.widget.ViewPager
+import kotlinx.android.synthetic.main.page.view.*
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
@@ -29,13 +30,20 @@ class MainActivity : AppCompatActivity() {
         indicator.setViewPager(viewPager)
 
         viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
-            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) { }
+            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+
+            }
 
             override fun onPageSelected(position: Int) {
                 currentPage = position
+                viewPager.description.clearAnimation()
+                viewPager.description.visibility = View.INVISIBLE
+                pagerAdapter.stopAnim()
             }
 
-            override fun onPageScrollStateChanged(state: Int) { }
+            override fun onPageScrollStateChanged(state: Int) {
+
+            }
         })
 
         /* After setting the adapter use the timer */
