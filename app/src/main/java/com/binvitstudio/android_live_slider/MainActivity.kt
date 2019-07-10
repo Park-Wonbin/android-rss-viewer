@@ -2,28 +2,54 @@ package com.binvitstudio.android_live_slider
 
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import me.relex.circleindicator.CircleIndicator
 import androidx.viewpager.widget.ViewPager
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.page.view.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.util.*
+import retrofit2.Retrofit
+import retrofit2.converter.scalars.ScalarsConverterFactory
 
 class MainActivity : AppCompatActivity() {
 
+    // for Parsing
+    private lateinit var mRetrofit: Retrofit
+    private lateinit var mRetrofitAPI: RetrofitAPI
+    private lateinit var mCallNewsList: Call<String>
+    private lateinit var mGson: Gson
+
+    // for View Pager
     private lateinit var pagerAdapter: PagerAdapter
 
-    var currentPage = 0
-    var timer: Timer? = null
-    val DELAY_MS: Long = 500    // delay in milliseconds before task is to be executed
-    val PERIOD_MS: Long = 3000  // time in milliseconds between successive task executions.
+    // for Auto Swipe
+    private var currentPage = 0
+    private var timer: Timer? = null
+    private val DELAY_MS: Long = 500    // delay in milliseconds before task is to be executed
+    private val PERIOD_MS: Long = 3000  // time in milliseconds between successive task executions.
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Retrofit ---
+        mGson = Gson()
+        mRetrofit = Retrofit.Builder().baseUrl("https://rss-search-api.herokuapp.com").addConverterFactory(ScalarsConverterFactory.create()).build()
+        mRetrofitAPI = mRetrofit.create(RetrofitAPI::class.java)
+
+        mCallNewsList = mRetrofitAPI.getNewsList()
+        mCallNewsList.enqueue(mRetrofitCallback)
+    }
+
+    private fun setViewPager(data: NewsListVO) {  // View Page
         pagerAdapter = PagerAdapter(this)
+        pagerAdapter.setNewsData(data)
         viewPager.adapter = pagerAdapter
 
         val indicator = findViewById(R.id.indicator) as CircleIndicator
@@ -47,6 +73,10 @@ class MainActivity : AppCompatActivity() {
         })
 
         /* After setting the adapter use the timer */
+        setAutoSwipe()
+    }
+
+    private fun setAutoSwipe() { // Auto Swipe using Timer()
         val handler = Handler()
         val Update = Runnable {
             if (currentPage == pagerAdapter.count) {
@@ -61,5 +91,17 @@ class MainActivity : AppCompatActivity() {
                 handler.post(Update)
             }
         }, DELAY_MS, PERIOD_MS)
+    }
+
+    private val mRetrofitCallback = object: Callback<String> {
+        override fun onResponse(call:Call<String>, response: Response<String>) {
+            val result = response.body()
+            Log.v("RetrofitCallback", result)
+            val mNewsListVO = mGson.fromJson(result, Array<NewsListVO>::class.java)
+            setViewPager(mNewsListVO[0])
+        }
+        override fun onFailure(call:Call<String>, t:Throwable) {
+            t.printStackTrace()
+        }
     }
 }
