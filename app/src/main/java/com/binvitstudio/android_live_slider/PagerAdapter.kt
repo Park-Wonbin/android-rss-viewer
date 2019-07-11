@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import androidx.viewpager.widget.PagerAdapter
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.page.view.*
 
 class PagerAdapter(private val mContext: Context) : PagerAdapter() {
@@ -23,14 +24,18 @@ class PagerAdapter(private val mContext: Context) : PagerAdapter() {
             val inflater: LayoutInflater = mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             view = inflater.inflate(R.layout.page, container, false)
 
-            view!!.time.text = mNewsList.items[position].published
+            view!!.time.text = TimeFormat.formatTimeString(mNewsList.items[position].published)
             view!!.title.text = mNewsList.items[position].title
+
             view!!.description.text = mNewsList.items[position].description + "..."
             var span = view!!.description.text as Spannable
             span.setSpan(BackgroundColorSpan(Color.parseColor("#B3000000")), 0, view!!.description.text.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-
             view!!.description.clearAnimation()
             view!!.description.visibility = View.INVISIBLE
+
+            if (mNewsList.items[position].enclosures != null)
+                Picasso.get().load(mNewsList.items[position].enclosures!![0].url).placeholder(R.drawable.test_img).transform(ImageFilter()).into(view!!.image)
+
             view!!.image.animation = AnimationUtils.loadAnimation(mContext, R.anim.zoom)
         }
 

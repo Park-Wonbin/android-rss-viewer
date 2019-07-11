@@ -9,6 +9,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import me.relex.circleindicator.CircleIndicator
 import androidx.viewpager.widget.ViewPager
 import com.google.gson.Gson
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.page.view.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -32,7 +33,7 @@ class MainActivity : AppCompatActivity() {
     private var currentPage = 0
     private var timer: Timer? = null
     private val DELAY_MS: Long = 500    // delay in milliseconds before task is to be executed
-    private val PERIOD_MS: Long = 3000  // time in milliseconds between successive task executions.
+    private val PERIOD_MS: Long = 4000  // time in milliseconds between successive task executions.
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
