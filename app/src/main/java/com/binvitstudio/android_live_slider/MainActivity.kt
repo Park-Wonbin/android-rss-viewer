@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
 
         val indicator = findViewById(R.id.indicator) as CircleIndicator
         indicator.setViewPager(viewPager)
-
+        
         viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
 

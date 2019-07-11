@@ -1,6 +1,7 @@
 package com.binvitstudio.android_live_slider
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.text.Spannable
 import android.text.style.BackgroundColorSpan
@@ -37,6 +38,12 @@ class PagerAdapter(private val mContext: Context) : PagerAdapter() {
                 Picasso.get().load(mNewsList.items[position].enclosures!![0].url).placeholder(R.drawable.test_img).transform(ImageFilter()).into(view!!.image)
 
             view!!.image.animation = AnimationUtils.loadAnimation(mContext, R.anim.zoom)
+
+            view!!.page.setOnClickListener {
+                val intent = Intent(mContext, NewsActivity::class.java)
+                intent.putExtra("news_url", mNewsList.items[position].link)
+                view!!.context.startActivity(intent)
+            }
         }
 
         container.addView(view)
