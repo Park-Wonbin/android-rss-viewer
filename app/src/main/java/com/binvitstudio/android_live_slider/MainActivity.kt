@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setViewPager(data: NewsListVO) {  // View Page
         pagerAdapter = PagerAdapter(this)
-        pagerAdapter.setNewsData(data)
+        pagerAdapter.setNewsData(data, true)
         viewPager.adapter = pagerAdapter
 
         val indicator = findViewById(R.id.indicator) as CircleIndicator

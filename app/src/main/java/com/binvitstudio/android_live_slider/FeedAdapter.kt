@@ -20,7 +20,7 @@ class FeedAdapter(): RecyclerView.Adapter<FeedAdapter.listAdapterViewHolder>() {
     private var mData: Array<NewsListVO>? = null
 
     override fun getItemId(position: Int): Long {
-        Log.d("hihi", mData!![position].hashCode().toLong().toString())
+        Log.d("hashcode", mData!![position].hashCode().toLong().toString())
         return mData!![position].hashCode().toLong()
     }
 
@@ -32,9 +32,15 @@ class FeedAdapter(): RecyclerView.Adapter<FeedAdapter.listAdapterViewHolder>() {
         if (holder.timer != null) {
             holder.timer!!.cancel()
         }
-        holder.setViewPager(thisItem)
-        /* After setting the adapter use the timer */
-        if (currentCategory == position) holder.setAutoSwipe()
+
+        if (currentCategory == position) {
+            holder.setViewPager(thisItem, true)
+            /* After setting the adapter use the timer */
+            holder.setAutoSwipe()
+        }
+        else {
+            holder.setViewPager(thisItem, false)
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): listAdapterViewHolder {
@@ -69,9 +75,9 @@ class FeedAdapter(): RecyclerView.Adapter<FeedAdapter.listAdapterViewHolder>() {
         // Category Title
         val category: TextView = v.findViewById(R.id.category)
 
-        fun setViewPager(data: NewsListVO) {  // View Page
+        fun setViewPager(data: NewsListVO, anim: Boolean) {  // View Page
             pagerAdapter = PagerAdapter(context)
-            pagerAdapter.setNewsData(data)
+            pagerAdapter.setNewsData(data, anim)
 
             viewPager.adapter = pagerAdapter
 
@@ -116,16 +122,16 @@ class FeedAdapter(): RecyclerView.Adapter<FeedAdapter.listAdapterViewHolder>() {
     }
 
     fun startAnimation(position: Int) {
-        currentCategory = position
-        if (position != -1) {
+        if (position != -1 && currentCategory != position) {
+            notifyItemInserted(position)  // Adapter에 추가
 
-            notifyItemInserted(position);  // Adapter에 추가
+            notifyItemRemoved(position) // Adapter에 삭제
 
-            notifyItemRemoved(position); // Adapter에 삭제
+            notifyItemChanged(position) // Adapter View의 데이터만 변경
 
-            notifyItemChanged(position); // Adapter View의 데이터만 변경
+            notifyItemRangeChanged(0, itemCount) // Adapter의 0~10번VIew들의 데이터만 변경
 
-            notifyItemRangeChanged(0, itemCount); // Adapter의 0~10번VIew들의 데이터만 변경
+            currentCategory = position
         }
     }
 

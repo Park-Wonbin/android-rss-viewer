@@ -44,7 +44,6 @@ class FeedActivity : AppCompatActivity() {
         mRecyclerView!!.setHasFixedSize(true)
         mRecyclerView!!.adapter = mFeedAdapter
 
-
         mRecyclerView!!.addOnScrollListener(object : RecyclerView.OnScrollListener() {
 
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
@@ -55,8 +54,6 @@ class FeedActivity : AppCompatActivity() {
             }
 
         })
-
-
 
         // Retrofit ---
         mGson = Gson()

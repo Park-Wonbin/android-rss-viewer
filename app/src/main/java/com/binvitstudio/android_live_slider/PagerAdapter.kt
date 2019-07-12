@@ -16,6 +16,7 @@ import kotlinx.android.synthetic.main.page.view.*
 class PagerAdapter(private val mContext: Context) : PagerAdapter() {
 
     lateinit var mNewsList: NewsListVO
+    var isAnim: Boolean = false
 
     var view: View? = null
 
@@ -32,13 +33,13 @@ class PagerAdapter(private val mContext: Context) : PagerAdapter() {
             view!!.description.text = mNewsList.items[position].description + "..."
             var span = view!!.description.text as Spannable
             span.setSpan(BackgroundColorSpan(Color.parseColor("#B3000000")), 0, view!!.description.text.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-            view!!.description.clearAnimation()
+            if (isAnim) view!!.description.clearAnimation()
             view!!.description.visibility = View.INVISIBLE
 
             if (mNewsList.items[position].enclosures != null)
                 Picasso.get().load(mNewsList.items[position].enclosures!![0].url).placeholder(R.drawable.test_img).transform(ImageFilter()).into(view!!.image)
 
-            view!!.image.animation = AnimationUtils.loadAnimation(mContext, R.anim.zoom)
+            if (isAnim) view!!.image.animation = AnimationUtils.loadAnimation(mContext, R.anim.zoom)
 
             view!!.page.setOnClickListener {
                 val intent = Intent(mContext, NewsActivity::class.java)
@@ -53,8 +54,10 @@ class PagerAdapter(private val mContext: Context) : PagerAdapter() {
     }
 
     fun stopAnim() {
-        view!!.description.clearAnimation()
-        view!!.description.visibility = View.INVISIBLE
+        if (isAnim) {
+            view!!.description.clearAnimation()
+            view!!.description.visibility = View.INVISIBLE
+        }
     }
 
     override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {
@@ -64,14 +67,16 @@ class PagerAdapter(private val mContext: Context) : PagerAdapter() {
         return mNewsList.items.size
     }
     override fun isViewFromObject(view: View, `object`: Any): Boolean {
-        view.description.clearAnimation()
-        view.description.visibility=View.INVISIBLE
-        view.description.animation = AnimationUtils.loadAnimation(mContext, R.anim.show)
-
+        if (isAnim) {
+            view.description.clearAnimation()
+            view.description.visibility = View.INVISIBLE
+            view.description.animation = AnimationUtils.loadAnimation(mContext, R.anim.show)
+        }
         return view === `object`
     }
 
-    fun setNewsData(data: NewsListVO) {
+    fun setNewsData(data: NewsListVO, anim: Boolean) {
         mNewsList = data
+        isAnim = anim
     }
 }
