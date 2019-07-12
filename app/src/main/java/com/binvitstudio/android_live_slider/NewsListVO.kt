@@ -24,7 +24,7 @@ class NewsListVO {
         }
 
         inner class Author {
-
+            lateinit var name: String
         }
     }
 }

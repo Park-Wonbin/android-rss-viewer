@@ -1,5 +1,6 @@
 package com.binvitstudio.android_live_slider
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
@@ -46,6 +47,11 @@ class MainActivity : AppCompatActivity() {
 
         mCallNewsList = mRetrofitAPI.getNewsList()
         mCallNewsList.enqueue(mRetrofitCallback)
+
+        button.setOnClickListener {
+            intent = Intent(applicationContext, FeedActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun setViewPager(data: NewsListVO) {  // View Page
@@ -55,7 +61,7 @@ class MainActivity : AppCompatActivity() {
 
         val indicator = findViewById(R.id.indicator) as CircleIndicator
         indicator.setViewPager(viewPager)
-        
+
         viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
 

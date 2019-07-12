@@ -25,6 +25,7 @@ class PagerAdapter(private val mContext: Context) : PagerAdapter() {
             val inflater: LayoutInflater = mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             view = inflater.inflate(R.layout.page, container, false)
 
+            view!!.creator.text = mNewsList.items[position].author.name
             view!!.time.text = TimeFormat.formatTimeString(mNewsList.items[position].published)
             view!!.title.text = mNewsList.items[position].title
 

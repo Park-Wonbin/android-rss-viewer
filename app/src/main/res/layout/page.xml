@@ -31,7 +31,23 @@
 				android:textColor="#fff"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_marginRight="15dp"/>
+				android:shadowColor="#000000"
+				android:shadowRadius="1.0"
+				android:shadowDx="1.0"
+				android:shadowDy="1.0"/>
+			
+			<TextView android:text="·"
+					  android:textSize="13dp"
+					  android:textStyle="bold"
+					  android:textColor="#fff"
+					  android:layout_width="wrap_content"
+					  android:layout_height="wrap_content"
+					  android:layout_marginLeft="10dp"
+					  android:layout_marginRight="10dp"
+					  android:shadowColor="#000000"
+					  android:shadowRadius="1.0"
+					  android:shadowDx="1.0"
+					  android:shadowDy="1.0"/>
 			
 			<TextView
 				android:id="@+id/time"
@@ -40,7 +56,11 @@
 				android:textStyle="bold"
 				android:textColor="#fff"
 				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"/>
+				android:layout_height="wrap_content"
+				android:shadowColor="#000000"
+				android:shadowRadius="1.0"
+				android:shadowDx="1.0"
+				android:shadowDy="1.0"/>
 		
 		</LinearLayout>
 		
@@ -51,7 +71,11 @@
 			android:textStyle="bold"
 			android:textColor="#fff"
 			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"/>
+			android:layout_height="wrap_content"
+			android:shadowColor="#000000"
+			android:shadowRadius="1.0"
+			android:shadowDx="1.0"
+			android:shadowDy="1.0"/>
 	</LinearLayout>
 
 	

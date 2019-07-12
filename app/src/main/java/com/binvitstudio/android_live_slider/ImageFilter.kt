@@ -16,8 +16,7 @@ class ImageFilter: Transformation {
         System.loadLibrary("NativeImageProcessor")
 
         var myFilter = Filter()
-        myFilter.addSubFilter(BrightnessSubFilter(50))
-        myFilter.addSubFilter(ContrastSubFilter(1.1f))
+        myFilter.addSubFilter(BrightnessSubFilter(-25))
 
         if (source!= null) {
             var inputImage: Bitmap = source!!.copy(source.config, true)

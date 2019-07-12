@@ -21,7 +21,7 @@
         </activity>
         
         <activity android:name=".NewsActivity"/>
-        
+        <activity android:name=".FeedActivity"/>
     </application>
 
 </manifest>
