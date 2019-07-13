@@ -69,7 +69,7 @@ class FeedAdapter(): RecyclerView.Adapter<FeedAdapter.listAdapterViewHolder>() {
         // for Auto Swipe
         var currentPage = 0
         var timer: Timer? = null
-        private val DELAY_MS: Long = 500    // delay in milliseconds before task is to be executed
+        private val DELAY_MS: Long = 4000    // delay in milliseconds before task is to be executed
         private val PERIOD_MS: Long = 4000  // time in milliseconds between successive task executions.
 
         // Category Title

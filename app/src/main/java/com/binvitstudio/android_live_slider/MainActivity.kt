@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
     // for Auto Swipe
     private var currentPage = 0
     private var timer: Timer? = null
-    private val DELAY_MS: Long = 500    // delay in milliseconds before task is to be executed
+    private val DELAY_MS: Long = 4000    // delay in milliseconds before task is to be executed
     private val PERIOD_MS: Long = 4000  // time in milliseconds between successive task executions.
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -38,6 +38,7 @@ class FeedActivity : AppCompatActivity() {
         // RecyclerView Adapter ---
         var layoutManager = LinearLayoutManager(applicationContext, RecyclerView.VERTICAL, false)
         mRecyclerView = findViewById(R.id.recycler_view) as RecyclerView
+        mRecyclerView!!.itemAnimator = null // Blink animation cancel(when data changed)
         mFeedAdapter = FeedAdapter()
         mFeedAdapter!!.setHasStableIds(true)
         mRecyclerView!!.layoutManager = layoutManager
@@ -49,8 +50,8 @@ class FeedActivity : AppCompatActivity() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
 
-                Log.d("hihi", ""+newState + " - " + RecyclerView.SCROLL_STATE_IDLE + " "+(recyclerView.layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition())
-                if (newState == RecyclerView.SCROLL_STATE_IDLE) mFeedAdapter!!.startAnimation((recyclerView.layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition())
+                if (newState == RecyclerView.SCROLL_STATE_IDLE)
+                    mFeedAdapter!!.startAnimation((recyclerView.layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition())
             }
 
         })
