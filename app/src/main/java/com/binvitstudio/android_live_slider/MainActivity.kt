@@ -1,6 +1,7 @@
 package com.binvitstudio.android_live_slider
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
@@ -9,8 +10,11 @@ import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import me.relex.circleindicator.CircleIndicator
 import androidx.viewpager.widget.ViewPager
+import com.github.ybq.android.spinkit.style.Wave
 import com.google.gson.Gson
 import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.activity_main.progressBar
+import kotlinx.android.synthetic.main.feed.*
 import kotlinx.android.synthetic.main.page.view.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -39,6 +43,12 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // ProgressBar
+        val wave = Wave()
+        wave.color = Color.parseColor("#26A69A")
+        progressBar.indeterminateDrawable = wave
+        progressBar.visibility = View.VISIBLE
 
         // Retrofit ---
         mGson = Gson()
@@ -102,12 +112,16 @@ class MainActivity : AppCompatActivity() {
 
     private val mRetrofitCallback = object: Callback<String> {
         override fun onResponse(call:Call<String>, response: Response<String>) {
+            progressBar.visibility = View.GONE
+
             val result = response.body()
             Log.v("RetrofitCallback", result)
             val mNewsListVO = mGson.fromJson(result, Array<NewsListVO>::class.java)
             setViewPager(mNewsListVO[0])
         }
         override fun onFailure(call:Call<String>, t:Throwable) {
+            progressBar.visibility = View.GONE
+
             t.printStackTrace()
         }
     }

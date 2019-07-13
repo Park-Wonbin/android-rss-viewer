@@ -26,24 +26,24 @@ class PagerAdapter(private val mContext: Context) : PagerAdapter() {
             val inflater: LayoutInflater = mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             view = inflater.inflate(R.layout.page, container, false)
 
-            view!!.creator.text = mNewsList.items[position].author.name
-            view!!.time.text = TimeFormat.formatTimeString(mNewsList.items[position].published)
-            view!!.title.text = mNewsList.items[position].title
+            view!!.creator.text = mNewsList.items!![position].author.name
+            view!!.time.text = TimeFormat.formatTimeString(mNewsList.items!![position].published)
+            view!!.title.text = mNewsList.items!![position].title
 
-            view!!.description.text = mNewsList.items[position].description + "..."
+            view!!.description.text = mNewsList.items!![position].description + "..."
             var span = view!!.description.text as Spannable
             span.setSpan(BackgroundColorSpan(Color.parseColor("#B3000000")), 0, view!!.description.text.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
             if (isAnim) view!!.description.clearAnimation()
             view!!.description.visibility = View.INVISIBLE
 
-            if (mNewsList.items[position].enclosures != null)
-                Picasso.get().load(mNewsList.items[position].enclosures!![0].url).placeholder(R.drawable.test_img).transform(ImageFilter()).into(view!!.image)
+            if (mNewsList.items!![position].enclosures != null)
+                Picasso.get().load(mNewsList.items!![position].enclosures!![0].url).placeholder(R.drawable.test_img).transform(ImageFilter()).into(view!!.image)
 
             if (isAnim) view!!.image.animation = AnimationUtils.loadAnimation(mContext, R.anim.zoom)
 
             view!!.page.setOnClickListener {
                 val intent = Intent(mContext, NewsActivity::class.java)
-                intent.putExtra("news_url", mNewsList.items[position].link)
+                intent.putExtra("news_url", mNewsList.items!![position].link)
                 view!!.context.startActivity(intent)
             }
         }
@@ -64,7 +64,8 @@ class PagerAdapter(private val mContext: Context) : PagerAdapter() {
         container.removeView(`object` as View)
     }
     override fun getCount(): Int {
-        return mNewsList.items.size
+        if (mNewsList.items == null) return 0
+        return mNewsList.items!!.size
     }
     override fun isViewFromObject(view: View, `object`: Any): Boolean {
         if (isAnim) {

@@ -5,7 +5,7 @@ class NewsListVO {
     lateinit var rss_link: String
     lateinit var title: String
     lateinit var link: String
-    lateinit var items: ArrayList<News>
+    var items: ArrayList<News>? = null
     lateinit var feedType: String
     lateinit var feedVersion: String
 

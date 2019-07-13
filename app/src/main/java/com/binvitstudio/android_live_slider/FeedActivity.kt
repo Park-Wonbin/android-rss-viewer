@@ -1,23 +1,24 @@
 package com.binvitstudio.android_live_slider
 
+import android.graphics.Color
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.activity_main.*
-import me.relex.circleindicator.CircleIndicator
-import androidx.viewpager.widget.ViewPager
 import com.google.gson.Gson
-import kotlinx.android.synthetic.main.page.view.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.util.*
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
+import androidx.core.view.MenuItemCompat
+import android.view.Menu
+import android.view.View
+import androidx.appcompat.widget.SearchView
+import kotlinx.android.synthetic.main.feed.*
+import com.github.ybq.android.spinkit.style.Wave
+
 
 class FeedActivity : AppCompatActivity() {
 
@@ -56,6 +57,12 @@ class FeedActivity : AppCompatActivity() {
 
         })
 
+        // ProgressBar
+        val wave = Wave()
+        wave.color = Color.parseColor("#26A69A")
+        progressBar.indeterminateDrawable = wave
+        progressBar.visibility = View.VISIBLE
+
         // Retrofit ---
         mGson = Gson()
         mRetrofit = Retrofit.Builder().baseUrl("https://rss-search-api.herokuapp.com").addConverterFactory(ScalarsConverterFactory.create()).build()
@@ -67,13 +74,42 @@ class FeedActivity : AppCompatActivity() {
 
     private val mRetrofitCallback = object: Callback<String> {
         override fun onResponse(call:Call<String>, response: Response<String>) {
+            progressBar.visibility = View.GONE
+
             val result = response.body()
             Log.v("RetrofitCallback", result)
             val mNewsListVO = mGson.fromJson(result, Array<NewsListVO>::class.java)
             mFeedAdapter!!.setData(mNewsListVO)
         }
         override fun onFailure(call:Call<String>, t:Throwable) {
+            progressBar.visibility = View.GONE
+
             t.printStackTrace()
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.menu, menu)
+        val searchViewItem = menu.findItem(R.id.action_search)
+        val searchViewAndroidActionBar = MenuItemCompat.getActionView(searchViewItem) as SearchView
+        searchViewAndroidActionBar.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                searchViewAndroidActionBar.clearFocus()
+                SearchWord(query)
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                return false
+            }
+        })
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    private fun SearchWord(word: String) {
+        progressBar.visibility = View.VISIBLE
+        mCallNewsList = mRetrofitAPI.getSearchList(word)
+        mCallNewsList.enqueue(mRetrofitCallback)
     }
 }

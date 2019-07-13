@@ -123,14 +123,7 @@ class FeedAdapter(): RecyclerView.Adapter<FeedAdapter.listAdapterViewHolder>() {
 
     fun startAnimation(position: Int) {
         if (position != -1 && currentCategory != position) {
-            notifyItemInserted(position)  // Adapter에 추가
-
-            notifyItemRemoved(position) // Adapter에 삭제
-
-            notifyItemChanged(position) // Adapter View의 데이터만 변경
-
-            notifyItemRangeChanged(0, itemCount) // Adapter의 0~10번VIew들의 데이터만 변경
-
+            notifyItemRangeChanged(0, itemCount)
             currentCategory = position
         }
     }
