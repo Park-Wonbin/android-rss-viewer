@@ -90,11 +90,7 @@ class FeedAdapter(): RecyclerView.Adapter<FeedAdapter.listAdapterViewHolder>() {
 
                 override fun onPageSelected(position: Int) {
                     currentPage = position
-                    if (viewPager.description != null) {
-                        viewPager.description.clearAnimation()
-                        viewPager.description.visibility = View.INVISIBLE
-                        pagerAdapter.stopAnim()
-                    }
+                    pagerAdapter.stopAnim()
                 }
 
                 override fun onPageScrollStateChanged(state: Int) {
