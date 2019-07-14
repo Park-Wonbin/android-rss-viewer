@@ -5,13 +5,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.viewpager.widget.PagerAdapter
 
-abstract class LiveSliderPagerAdapter<T>(protected val context: Context) : PagerAdapter() {
+abstract class LiveSliderPagerAdapter<T> : PagerAdapter() {
+    protected lateinit var context: Context
     protected var feed : Feed<T>? = null
     protected var animation : Boolean = false
 
     fun setData(feed: Feed<T>?, animation: Boolean) {
         this.feed = feed
         this.animation = animation
+    }
+
+    fun setAdapterContext(context: Context) {
+        this.context = context
     }
 
     abstract fun stopAnimation()

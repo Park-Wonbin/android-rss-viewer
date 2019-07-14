@@ -18,7 +18,7 @@ class LiveSliderAdapter<T>(): RecyclerView.Adapter<LiveSliderAdapter<T>.LiveSlid
     private var currentFeed = 0
     private var data : Array<Feed<T>>? = null
 
-    constructor(pagerAdapter: LiveSliderPagerAdapter<T>) : this(pagerAdapter, 400, 400)
+    constructor(pagerAdapter: LiveSliderPagerAdapter<T>) : this(pagerAdapter, 4000, 4000)
 
     constructor(pagerAdapter: LiveSliderPagerAdapter<T>, delay: Long, period: Long) : this() {
         this.pagerAdapter = pagerAdapter
@@ -35,7 +35,9 @@ class LiveSliderAdapter<T>(): RecyclerView.Adapter<LiveSliderAdapter<T>.LiveSlid
 
         holder.category.text = feed?.category
         holder.currentPage = 0
-        holder.timer?.cancel()
+        if (holder.timer != null) {
+            holder.timer!!.cancel()
+        }
 
         if (currentFeed == position) {
             holder.setViewPager(feed, true)
@@ -44,13 +46,11 @@ class LiveSliderAdapter<T>(): RecyclerView.Adapter<LiveSliderAdapter<T>.LiveSlid
         else {
             holder.setViewPager(feed, false)
         }
-
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LiveSliderViewHolder {
         val context = parent.context
-        val layoutIdForListItem = R.layout.feed
+        val layoutIdForListItem = R.layout.live_feed
         val inflater = LayoutInflater.from(context)
         val shouldAttachToParentImmediately = false
 
@@ -79,9 +79,13 @@ class LiveSliderAdapter<T>(): RecyclerView.Adapter<LiveSliderAdapter<T>.LiveSlid
         val category : TextView = v.findViewById(R.id.category)
 
         fun setViewPager(data: Feed<T>?, animation: Boolean) {
+            val newPagerAdapter = pagerAdapter.javaClass.newInstance()
+            newPagerAdapter.setAdapterContext(context)
+            newPagerAdapter.setData(data, animation)
+            viewPager.adapter = newPagerAdapter
+
             pagerAdapter.setData(data, animation)
 
-            viewPager.adapter = pagerAdapter
             indicator.setViewPager(viewPager)
             viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
                 override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
