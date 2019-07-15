@@ -1,7 +1,6 @@
 package com.poapper.liveslider
 
 import android.content.Context
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.iterator
@@ -10,15 +9,15 @@ import androidx.viewpager.widget.PagerAdapter
 abstract class LiveSliderPagerAdapter<T> : PagerAdapter() {
     private lateinit var viewContainer : ViewGroup
     private lateinit var context: Context
-    private var feed : Feed<T>? = null
+    private var liveSliderFeed : LiveSliderFeed<T>? = null
     private var animation : Boolean = false
 
     abstract fun startAnimation(context: Context, view: View)
     abstract fun stopAnimation(context: Context, view: View)
     protected abstract fun createView(context: Context, container: ViewGroup, item: T) : View
 
-    fun setData(feed: Feed<T>?, animation: Boolean) {
-        this.feed = feed
+    fun setData(liveSliderFeed: LiveSliderFeed<T>?, animation: Boolean) {
+        this.liveSliderFeed = liveSliderFeed
         this.animation = animation
     }
 
@@ -41,7 +40,7 @@ abstract class LiveSliderPagerAdapter<T> : PagerAdapter() {
     }
 
     override fun instantiateItem(container: ViewGroup, position: Int): View {
-        val view = createView(context, container, feed!!.items!![position])
+        val view = createView(context, container, liveSliderFeed!!.items!![position])
 
         view.id = position
         container.addView(view)
@@ -55,7 +54,7 @@ abstract class LiveSliderPagerAdapter<T> : PagerAdapter() {
 
     override fun isViewFromObject(view: View, `object`: Any) = view == `object`
 
-    override fun getCount() = feed?.items?.size ?: 0
+    override fun getCount() = liveSliderFeed?.items?.size ?: 0
 
     override fun finishUpdate(container: ViewGroup) {
         viewContainer = container

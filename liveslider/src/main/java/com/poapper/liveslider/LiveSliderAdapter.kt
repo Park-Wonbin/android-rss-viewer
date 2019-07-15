@@ -17,7 +17,7 @@ class LiveSliderAdapter<T>(): RecyclerView.Adapter<LiveSliderAdapter<T>.LiveSlid
     private var delay : Long = 0
     private var period : Long = 0
     private var currentFeed = 0
-    private var data : Array<Feed<T>>? = null
+    private var data : Array<LiveSliderFeed<T>>? = null
     private var autoSwipe : Boolean = false
 
     constructor(pagerAdapter: LiveSliderPagerAdapter<T>) : this(pagerAdapter, false)
@@ -63,7 +63,7 @@ class LiveSliderAdapter<T>(): RecyclerView.Adapter<LiveSliderAdapter<T>.LiveSlid
         }
     }
 
-    fun setData(data: Array<Feed<T>>?) {
+    fun setData(data: Array<LiveSliderFeed<T>>?) {
         this.data = data
         Log.d("datasize", this.data!!.size.toString())
         notifyDataSetChanged()
@@ -110,7 +110,7 @@ class LiveSliderAdapter<T>(): RecyclerView.Adapter<LiveSliderAdapter<T>.LiveSlid
             newPagerAdapter?.refreshAnimation(position)
         }
 
-        fun setViewPager(data: Feed<T>?, animation: Boolean, autoSwipe: Boolean) {
+        fun setViewPager(data: LiveSliderFeed<T>?, animation: Boolean, autoSwipe: Boolean) {
             val listener = object : ViewPager.OnPageChangeListener {
                 override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
 

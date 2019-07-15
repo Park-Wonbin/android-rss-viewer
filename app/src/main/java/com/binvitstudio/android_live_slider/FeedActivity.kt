@@ -19,7 +19,7 @@ import androidx.appcompat.widget.SearchView
 import kotlinx.android.synthetic.main.feed.*
 import com.github.ybq.android.spinkit.style.Wave
 import com.google.gson.reflect.TypeToken
-import com.poapper.liveslider.Feed
+import com.poapper.liveslider.LiveSliderFeed
 import com.poapper.liveslider.LiveSliderAdapter
 
 
@@ -81,7 +81,7 @@ class FeedActivity : AppCompatActivity() {
             val result = response.body()
             val listType = object : TypeToken<Array<RSSJson>>(){}.type
             val rawData = mGson.fromJson<Array<RSSJson>>(result, listType)
-            var data = Array(rawData.size) { Feed<News>() }
+            var data = Array(rawData.size) { LiveSliderFeed<News>() }
             for((idx, obj) in rawData.withIndex()) {
                 data[idx].category = obj.title
                 data[idx].items = obj.items

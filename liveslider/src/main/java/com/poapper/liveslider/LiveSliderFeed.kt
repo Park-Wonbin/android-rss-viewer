@@ -1,6 +1,6 @@
 package com.poapper.liveslider
 
-class Feed<T> {
+class LiveSliderFeed<T> {
     var category = "example"
     var items : ArrayList<T>? = null
 }
