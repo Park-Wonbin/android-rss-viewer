@@ -29,8 +29,8 @@ class FeedAdapter(): RecyclerView.Adapter<FeedAdapter.listAdapterViewHolder>() {
 
         holder.category.text = thisItem.title
         holder.currentPage = 0
-        if (holder.timer != null) {
-            holder.timer!!.cancel()
+        if (holder.timerTask != null) {
+            holder.timerTask!!.cancel()
         }
 
         if (currentCategory == position) {
@@ -63,7 +63,7 @@ class FeedAdapter(): RecyclerView.Adapter<FeedAdapter.listAdapterViewHolder>() {
 
         // for View Pager
         private lateinit var pagerAdapter: PagerAdapter
-        private var viewPager: ViewPager = v.findViewById(R.id.viewPager)
+        private var viewPager: NewsViewPager = v.findViewById(R.id.viewPager)
         private val indicator: CircleIndicator = v.findViewById(R.id.indicator)
 
         // for Auto Swipe
@@ -71,6 +71,7 @@ class FeedAdapter(): RecyclerView.Adapter<FeedAdapter.listAdapterViewHolder>() {
         var timer: Timer? = null
         private val DELAY_MS: Long = 4000    // delay in milliseconds before task is to be executed
         private val PERIOD_MS: Long = 4000  // time in milliseconds between successive task executions.
+        var timerTask: TimerTask? = null
 
         // Category Title
         val category: TextView = v.findViewById(R.id.category)
@@ -78,6 +79,8 @@ class FeedAdapter(): RecyclerView.Adapter<FeedAdapter.listAdapterViewHolder>() {
         fun setViewPager(data: NewsListVO, anim: Boolean) {  // View Page
             pagerAdapter = PagerAdapter(context)
             pagerAdapter.setNewsData(data, anim)
+
+            viewPager.disableScroll(!anim)
 
             viewPager.adapter = pagerAdapter
 
@@ -89,12 +92,10 @@ class FeedAdapter(): RecyclerView.Adapter<FeedAdapter.listAdapterViewHolder>() {
                 }
 
                 override fun onPageSelected(position: Int) {
+                    timerTask?.cancel()
+                    setAutoSwipe()
                     currentPage = position
-                    if (viewPager.description != null) {
-                        viewPager.description.clearAnimation()
-                        viewPager.description.visibility = View.INVISIBLE
-                        pagerAdapter.stopAnim()
-                    }
+                    pagerAdapter.setAnim(position)
                 }
 
                 override fun onPageScrollStateChanged(state: Int) {
@@ -104,6 +105,13 @@ class FeedAdapter(): RecyclerView.Adapter<FeedAdapter.listAdapterViewHolder>() {
         }
 
         fun setAutoSwipe() { // Auto Swipe using Timer()
+            if(timer == null)
+                timer = Timer() // This will create a new Thread
+            timerTask = createTimerTask()
+            timer!!.schedule(timerTask, DELAY_MS, PERIOD_MS)
+        }
+
+        fun createTimerTask() : TimerTask? {
             val handler = Handler()
             val Update = Runnable {
                 if (currentPage == pagerAdapter.count) {
@@ -112,12 +120,11 @@ class FeedAdapter(): RecyclerView.Adapter<FeedAdapter.listAdapterViewHolder>() {
                 viewPager.setCurrentItem(currentPage++, true)
             }
 
-            timer = Timer() // This will create a new Thread
-            timer!!.schedule(object : TimerTask() { // task to be scheduled
-                override fun run() {
-                    handler.post(Update)
-                }
-            }, DELAY_MS, PERIOD_MS)
+           return object: TimerTask() {
+               override fun run() {
+                   handler.post(Update)
+               }
+           }
         }
     }
 

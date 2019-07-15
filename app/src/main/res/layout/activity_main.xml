@@ -34,7 +34,7 @@
         
             <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent">
             
-                <androidx.viewpager.widget.ViewPager
+                <com.binvitstudio.android_live_slider.NewsViewPager
                     android:id="@+id/viewPager"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"/>

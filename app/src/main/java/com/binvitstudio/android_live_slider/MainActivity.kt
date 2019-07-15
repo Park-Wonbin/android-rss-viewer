@@ -78,10 +78,10 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onPageSelected(position: Int) {
+
+                Log.d("hihi", "실행됨!")
                 currentPage = position
-                viewPager.description.clearAnimation()
-                viewPager.description.visibility = View.INVISIBLE
-                pagerAdapter.stopAnim()
+                pagerAdapter.setAnim(position)
             }
 
             override fun onPageScrollStateChanged(state: Int) {
