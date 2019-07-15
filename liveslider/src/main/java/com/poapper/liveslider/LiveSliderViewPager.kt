@@ -1,11 +1,11 @@
-package com.binvitstudio.android_live_slider
+package com.poapper.liveslider
 
 import android.content.Context
 import android.util.AttributeSet
-import androidx.viewpager.widget.ViewPager
 import android.view.MotionEvent
+import androidx.viewpager.widget.ViewPager
 
-class NewsViewPager : ViewPager {
+class LiveSliderViewPager : ViewPager {
     private var disable = false
 
     constructor(context: Context) : this(context, null)

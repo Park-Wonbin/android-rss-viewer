@@ -18,6 +18,9 @@ import android.view.View
 import androidx.appcompat.widget.SearchView
 import kotlinx.android.synthetic.main.feed.*
 import com.github.ybq.android.spinkit.style.Wave
+import com.google.gson.reflect.TypeToken
+import com.poapper.liveslider.LiveSliderFeed
+import com.poapper.liveslider.LiveSliderAdapter
 
 
 class FeedActivity : AppCompatActivity() {
@@ -30,31 +33,29 @@ class FeedActivity : AppCompatActivity() {
 
     // for RecyclerView
     private var mRecyclerView: RecyclerView? = null
-    private var mFeedAdapter: FeedAdapter? = null
+    private var mFeedAdapter: LiveSliderAdapter<News>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.feed)
 
         // RecyclerView Adapter ---
-        var layoutManager = LinearLayoutManager(applicationContext, RecyclerView.VERTICAL, false)
-        mRecyclerView = findViewById(R.id.recycler_view) as RecyclerView
+        val layoutManager = LinearLayoutManager(applicationContext, RecyclerView.VERTICAL, false)
+        mRecyclerView = findViewById(R.id.recycler_view)
         mRecyclerView!!.itemAnimator = null // Blink animation cancel(when data changed)
-        mFeedAdapter = FeedAdapter()
+        mFeedAdapter = LiveSliderAdapter(NewsPageAdapter(), true)
         mFeedAdapter!!.setHasStableIds(true)
         mRecyclerView!!.layoutManager = layoutManager
         mRecyclerView!!.setHasFixedSize(true)
         mRecyclerView!!.adapter = mFeedAdapter
 
         mRecyclerView!!.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
 
                 if (newState == RecyclerView.SCROLL_STATE_IDLE)
                     mFeedAdapter!!.startAnimation((recyclerView.layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition())
             }
-
         })
 
         // ProgressBar
@@ -77,9 +78,15 @@ class FeedActivity : AppCompatActivity() {
             progressBar.visibility = View.GONE
 
             val result = response.body()
-            Log.v("RetrofitCallback", result)
-            val mNewsListVO = mGson.fromJson(result, Array<NewsListVO>::class.java)
-            mFeedAdapter!!.setData(mNewsListVO)
+            val listType = object : TypeToken<Array<RSSJson>>(){}.type
+            val rawData = mGson.fromJson<Array<RSSJson>>(result, listType)
+            var data = Array(rawData.size) { LiveSliderFeed<News>() }
+            for((idx, obj) in rawData.withIndex()) {
+                data[idx].category = obj.title
+                data[idx].items = obj.items
+            }
+
+            mFeedAdapter!!.setData(data)
         }
         override fun onFailure(call:Call<String>, t:Throwable) {
             progressBar.visibility = View.GONE
