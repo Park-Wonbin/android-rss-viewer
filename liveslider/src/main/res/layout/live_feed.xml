@@ -48,7 +48,7 @@
 			
 			</LinearLayout>
 			
-			<androidx.viewpager.widget.ViewPager
+			<com.poapper.liveslider.LiveSliderViewPager
 				android:id="@+id/viewPager"
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"/>

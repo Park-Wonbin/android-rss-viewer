@@ -21,7 +21,7 @@ class NewsActivity : AppCompatActivity() {
         mWebSettings = mWebView.settings
         mWebSettings.javaScriptEnabled = true
 
-        var intent: Intent = getIntent()
+        var intent: Intent = intent
         mWebView.loadUrl(intent.getStringExtra("news_url"))
     }
 }

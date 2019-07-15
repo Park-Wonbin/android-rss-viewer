@@ -43,7 +43,7 @@ class FeedActivity : AppCompatActivity() {
         val layoutManager = LinearLayoutManager(applicationContext, RecyclerView.VERTICAL, false)
         mRecyclerView = findViewById(R.id.recycler_view)
         mRecyclerView!!.itemAnimator = null // Blink animation cancel(when data changed)
-        mFeedAdapter = LiveSliderAdapter(NewsPageAdapter())
+        mFeedAdapter = LiveSliderAdapter(NewsPageAdapter(), true)
         mFeedAdapter!!.setHasStableIds(true)
         mRecyclerView!!.layoutManager = layoutManager
         mRecyclerView!!.setHasFixedSize(true)

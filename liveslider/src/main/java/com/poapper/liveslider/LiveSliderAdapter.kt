@@ -2,6 +2,7 @@ package com.poapper.liveslider
 
 import android.content.Context
 import android.os.Handler
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,13 +18,17 @@ class LiveSliderAdapter<T>(): RecyclerView.Adapter<LiveSliderAdapter<T>.LiveSlid
     private var period : Long = 0
     private var currentFeed = 0
     private var data : Array<Feed<T>>? = null
+    private var autoSwipe : Boolean = false
 
-    constructor(pagerAdapter: LiveSliderPagerAdapter<T>) : this(pagerAdapter, 4000, 4000)
+    constructor(pagerAdapter: LiveSliderPagerAdapter<T>) : this(pagerAdapter, false)
 
-    constructor(pagerAdapter: LiveSliderPagerAdapter<T>, delay: Long, period: Long) : this() {
+    constructor(pagerAdapter: LiveSliderPagerAdapter<T>, autoSwipe: Boolean) : this(pagerAdapter, autoSwipe, 4000, 4000)
+
+    constructor(pagerAdapter: LiveSliderPagerAdapter<T>, autoSwipe: Boolean, delay: Long, period: Long) : this() {
         this.pagerAdapter = pagerAdapter
         this.delay = delay
         this.period = period
+        this.autoSwipe = autoSwipe
     }
 
     override fun getItemId(position: Int) = data?.get(position).hashCode().toLong()
@@ -35,17 +40,10 @@ class LiveSliderAdapter<T>(): RecyclerView.Adapter<LiveSliderAdapter<T>.LiveSlid
 
         holder.category.text = feed?.category
         holder.currentPage = 0
-        if (holder.timer != null) {
-            holder.timer!!.cancel()
-        }
 
-        if (currentFeed == position) {
-            holder.setViewPager(feed, true)
-            holder.setAutoSwipe()
-        }
-        else {
-            holder.setViewPager(feed, false)
-        }
+        holder.setViewPager(feed,
+            animation = currentFeed == position,
+            autoSwipe = (currentFeed == position) && autoSwipe)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LiveSliderViewHolder {
@@ -67,53 +65,79 @@ class LiveSliderAdapter<T>(): RecyclerView.Adapter<LiveSliderAdapter<T>.LiveSlid
 
     fun setData(data: Array<Feed<T>>?) {
         this.data = data
+        Log.d("datasize", this.data!!.size.toString())
         notifyDataSetChanged()
     }
 
     inner class LiveSliderViewHolder(v: View, private val context: Context, private val pagerAdapter: LiveSliderPagerAdapter<T>, private val delay: Long, private val period: Long) : RecyclerView.ViewHolder(v) {
         private val indicator: CircleIndicator = v.findViewById(R.id.indicator)
-        private val viewPager: ViewPager = v.findViewById(R.id.viewPager)
+        private val viewPager: LiveSliderViewPager = v.findViewById(R.id.viewPager)
+        private val timer: Timer = Timer()
+        private var autoSwipe = false
+        private var newPagerAdapter : LiveSliderPagerAdapter<T>? = null
 
         var currentPage = 0
-        var timer : Timer? = null
+        var timerTask : TimerTask? = null
         val category : TextView = v.findViewById(R.id.category)
 
-        fun setViewPager(data: Feed<T>?, animation: Boolean) {
-            val newPagerAdapter = pagerAdapter.javaClass.newInstance()
-            newPagerAdapter.setAdapterContext(context)
-            newPagerAdapter.setData(data, animation)
-            viewPager.adapter = newPagerAdapter
-
-            pagerAdapter.setData(data, animation)
-
-            indicator.setViewPager(viewPager)
-            viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
-                override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
-
-                override fun onPageSelected(position: Int) {
-                    currentPage = position
-                    pagerAdapter.stopAnimation()
-                }
-
-                override fun onPageScrollStateChanged(state: Int) {}
-            })
-        }
-
-        fun setAutoSwipe() { // Auto Swipe using Timer()
+        private fun createTimerTask() : TimerTask {
             val handler = Handler()
-            val update = Runnable {
+            val pageUpdater = Runnable {
                 if (currentPage == pagerAdapter.count) {
                     currentPage = 0
                 }
                 viewPager.setCurrentItem(currentPage++, true)
             }
 
-            timer = Timer() // This will create a new Thread
-            timer!!.schedule(object : TimerTask() { // task to be scheduled
+            return object: TimerTask() {
                 override fun run() {
-                    handler.post(update)
+                    handler.post(pageUpdater)
                 }
-            }, delay, period)
+            }
+        }
+
+        private fun refreshAutoSwipe() {
+            if(autoSwipe) {
+                timerTask?.cancel()
+                timerTask = createTimerTask()
+                timer.schedule(timerTask, delay, period)
+            }
+        }
+
+        private fun refresh(position: Int) {
+            refreshAutoSwipe()
+            currentPage = position
+            newPagerAdapter?.refreshAnimation(position)
+        }
+
+        fun setViewPager(data: Feed<T>?, animation: Boolean, autoSwipe: Boolean) {
+            val listener = object : ViewPager.OnPageChangeListener {
+                override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
+
+                override fun onPageSelected(position: Int) {
+                    refresh(position)
+                }
+
+                override fun onPageScrollStateChanged(state: Int) {}
+            }
+
+            newPagerAdapter = pagerAdapter.javaClass.newInstance()
+            this.autoSwipe = autoSwipe
+            refreshAutoSwipe()
+
+            newPagerAdapter?.setAdapterContext(context)
+
+            viewPager.addOnPageChangeListener(listener)
+
+            newPagerAdapter?.setData(data, animation)
+            newPagerAdapter?.setViewContainer(viewPager)
+            viewPager.disableScroll(!animation)
+            viewPager.adapter = newPagerAdapter
+
+            indicator.setViewPager(viewPager)
+            viewPager.post(Runnable {
+                listener.onPageSelected(currentPage)
+            })
         }
     }
 }
