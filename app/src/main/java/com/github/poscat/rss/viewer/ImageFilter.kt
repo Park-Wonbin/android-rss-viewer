@@ -1,10 +1,9 @@
-package com.binvitstudio.android_live_slider
+package com.github.poscat.rss.viewer
 
 import android.graphics.Bitmap
 import com.squareup.picasso.Transformation
 import com.zomato.photofilters.imageprocessors.Filter
 import com.zomato.photofilters.imageprocessors.subfilters.BrightnessSubFilter
-import com.zomato.photofilters.imageprocessors.subfilters.ContrastSubFilter
 
 class ImageFilter: Transformation {
 

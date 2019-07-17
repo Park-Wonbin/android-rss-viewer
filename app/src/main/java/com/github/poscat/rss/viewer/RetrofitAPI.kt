@@ -1,4 +1,4 @@
-package com.binvitstudio.android_live_slider
+package com.github.poscat.rss.viewer
 
 import retrofit2.Call
 import retrofit2.http.GET

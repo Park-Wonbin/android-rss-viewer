@@ -1,4 +1,4 @@
-package com.binvitstudio.android_live_slider
+package com.github.poscat.rss.viewer
 
 import android.graphics.Bitmap
 

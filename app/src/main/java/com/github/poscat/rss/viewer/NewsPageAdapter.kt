@@ -1,4 +1,4 @@
-package com.binvitstudio.android_live_slider
+package com.github.poscat.rss.viewer
 
 import android.content.Context
 import android.content.Intent
@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
+import com.github.poscat.R
 import com.poapper.liveslider.LiveSliderPagerAdapter
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.page.view.*

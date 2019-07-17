@@ -1,9 +1,7 @@
-package com.binvitstudio.android_live_slider
+package com.github.poscat.rss.viewer
 
 import android.graphics.Color
-import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -17,13 +15,12 @@ import androidx.core.view.MenuItemCompat
 import android.view.Menu
 import android.view.View
 import androidx.appcompat.widget.SearchView
+import com.github.poscat.R
 import kotlinx.android.synthetic.main.feed.*
 import com.github.ybq.android.spinkit.style.Wave
 import com.google.gson.reflect.TypeToken
 import com.poapper.liveslider.LiveSliderFeed
 import com.poapper.liveslider.LiveSliderAdapter
-import com.squareup.picasso.Picasso
-import java.lang.Exception
 
 
 class FeedActivity : AppCompatActivity() {
