@@ -80,38 +80,20 @@ class FeedActivity : AppCompatActivity() {
 
     private val mRetrofitCallback = object: Callback<String> {
         override fun onResponse(call:Call<String>, response: Response<String>) {
-            // progressBar.visibility = View.GONE
+            progressBar.visibility = View.GONE
 
             val result = response.body()
             val listType = object : TypeToken<Array<RSSJson>>() {}.type
             val rawData = mGson.fromJson<Array<RSSJson>>(result, listType)
             var data = Array(rawData.size) { LiveSliderFeed<News>() }
 
-            Thread(object : Runnable {
-                override fun run() {
-                    for ((idx, obj) in rawData.withIndex()) {
-                        data[idx].category = obj.title
-                        data[idx].items = obj.items
+            for ((idx, obj) in rawData.withIndex()) {
+                data[idx].category = obj.title
+                data[idx].items = obj.items
+            }
 
-                        for ((i, o) in data[idx].items?.withIndex()!!) {
-                            if (o.enclosures != null)
-                                try {
-                                    data[idx].items?.get(i)?.img =
-                                        Picasso.get().load(o.enclosures!![0].url).placeholder(R.drawable.test_img)
-                                            .error(R.drawable.test_img).transform(ImageFilter()).get()
-                                } catch (e: Exception) {
-
-                                }
-                        }
-                    }
-
-                    runOnUiThread(Runnable {
-                        mFeedAdapter!!.setData(data)
-                        mOriginalData = data
-                        progressBar.visibility = View.GONE
-                    })
-                }
-            }).start()
+            mFeedAdapter!!.setData(data)
+            mOriginalData = data
         }
         override fun onFailure(call:Call<String>, t:Throwable) {
             progressBar.visibility = View.GONE
@@ -141,37 +123,24 @@ class FeedActivity : AppCompatActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
-    private fun SearchWord(word: String) {
-        progressBar.visibility = View.VISIBLE
-        mCallNewsList = mRetrofitAPI.getSearchList(word)
-        mCallNewsList.enqueue(mRetrofitCallback)
-    }
-
     private fun searchFilter(str: String) {
         val word = str.toLowerCase()
         var newData = ArrayList<LiveSliderFeed<News>>()
 
         if (mOriginalData != null)
             for (i in mOriginalData!!.iterator()) {
-                Log.v("hihi", i.category)
                 var newItem = LiveSliderFeed<News>()
                 newItem.category = i.category
                 newItem.items = ArrayList<News>()
                 if (i.items != null)
                     for (j in i.items!!.iterator()) {
-                        Log.v("hihi", j.title)
-
                         if (j.title.toLowerCase().contains(word) || j.description.toLowerCase().contains(word)) {
-                            Log.v("hihi", "hihihi")
                             newItem.items!!.add(j)
                         }
                     }
-                Log.v("hihi", ""+newItem.items!!.size)
-
                 newData.add(newItem)
             }
 
-        Log.v("hihi", ""+newData.size)
         val array = Array(newData.size) { LiveSliderFeed<News>() }
 
         mFeedAdapter!!.setData(newData.toArray(array))

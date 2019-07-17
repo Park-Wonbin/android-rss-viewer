@@ -24,13 +24,17 @@ class NewsPageAdapter : LiveSliderPagerAdapter<News>() {
         view.description.text = item.description + "..."
 
         val span = view.description.text as Spannable
-        span.setSpan(BackgroundColorSpan(Color.parseColor("#B3000000")),
+        span.setSpan(
+            BackgroundColorSpan(Color.parseColor("#B3000000")),
             0, view.description.text.length,
-            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
 
         if (item.enclosures != null)
-            view.image.setImageBitmap(item.img)
-            //Picasso.get().load(item.enclosures!![0].url).placeholder(R.drawable.test_img).transform(ImageFilter()).into(view.image)
+            Picasso.get().load(item.enclosures!![0].url)
+                .placeholder(R.drawable.loading_img)
+                .error(R.drawable.default_img)
+                .transform(ImageFilter()).into(view.image)
 
         view.setOnClickListener {
             val intent = Intent(context, NewsActivity::class.java)
