@@ -29,7 +29,8 @@ class NewsPageAdapter : LiveSliderPagerAdapter<News>() {
             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
 
         if (item.enclosures != null)
-            Picasso.get().load(item.enclosures!![0].url).placeholder(R.drawable.test_img).transform(ImageFilter()).into(view.image)
+            view.image.setImageBitmap(item.img)
+            //Picasso.get().load(item.enclosures!![0].url).placeholder(R.drawable.test_img).transform(ImageFilter()).into(view.image)
 
         view.setOnClickListener {
             val intent = Intent(context, NewsActivity::class.java)

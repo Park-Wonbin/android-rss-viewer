@@ -83,7 +83,7 @@ class LiveSliderAdapter<T>(): RecyclerView.Adapter<LiveSliderAdapter<T>.LiveSlid
         private fun createTimerTask() : TimerTask {
             val handler = Handler()
             val pageUpdater = Runnable {
-                if (currentPage == pagerAdapter.count) {
+                if (currentPage == newPagerAdapter?.count) {
                     currentPage = 0
                 }
                 viewPager.setCurrentItem(currentPage++, true)

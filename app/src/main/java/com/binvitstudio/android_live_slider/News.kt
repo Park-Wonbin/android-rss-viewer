@@ -1,5 +1,7 @@
 package com.binvitstudio.android_live_slider
 
+import android.graphics.Bitmap
+
 class News {
     lateinit var title: String
     lateinit var description: String
@@ -17,4 +19,5 @@ class News {
     inner class Author {
         lateinit var name: String
     }
+    var img: Bitmap? = null
 }

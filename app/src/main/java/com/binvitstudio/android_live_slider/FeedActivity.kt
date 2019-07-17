@@ -1,6 +1,7 @@
 package com.binvitstudio.android_live_slider
 
 import android.graphics.Color
+import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -21,6 +22,8 @@ import com.github.ybq.android.spinkit.style.Wave
 import com.google.gson.reflect.TypeToken
 import com.poapper.liveslider.LiveSliderFeed
 import com.poapper.liveslider.LiveSliderAdapter
+import com.squareup.picasso.Picasso
+import java.lang.Exception
 
 
 class FeedActivity : AppCompatActivity() {
@@ -34,6 +37,8 @@ class FeedActivity : AppCompatActivity() {
     // for RecyclerView
     private var mRecyclerView: RecyclerView? = null
     private var mFeedAdapter: LiveSliderAdapter<News>? = null
+
+    private var mOriginalData: Array<LiveSliderFeed<News>>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,18 +80,38 @@ class FeedActivity : AppCompatActivity() {
 
     private val mRetrofitCallback = object: Callback<String> {
         override fun onResponse(call:Call<String>, response: Response<String>) {
-            progressBar.visibility = View.GONE
+            // progressBar.visibility = View.GONE
 
             val result = response.body()
-            val listType = object : TypeToken<Array<RSSJson>>(){}.type
+            val listType = object : TypeToken<Array<RSSJson>>() {}.type
             val rawData = mGson.fromJson<Array<RSSJson>>(result, listType)
             var data = Array(rawData.size) { LiveSliderFeed<News>() }
-            for((idx, obj) in rawData.withIndex()) {
-                data[idx].category = obj.title
-                data[idx].items = obj.items
-            }
 
-            mFeedAdapter!!.setData(data)
+            Thread(object : Runnable {
+                override fun run() {
+                    for ((idx, obj) in rawData.withIndex()) {
+                        data[idx].category = obj.title
+                        data[idx].items = obj.items
+
+                        for ((i, o) in data[idx].items?.withIndex()!!) {
+                            if (o.enclosures != null)
+                                try {
+                                    data[idx].items?.get(i)?.img =
+                                        Picasso.get().load(o.enclosures!![0].url).placeholder(R.drawable.test_img)
+                                            .error(R.drawable.test_img).transform(ImageFilter()).get()
+                                } catch (e: Exception) {
+
+                                }
+                        }
+                    }
+
+                    runOnUiThread(Runnable {
+                        mFeedAdapter!!.setData(data)
+                        mOriginalData = data
+                        progressBar.visibility = View.GONE
+                    })
+                }
+            }).start()
         }
         override fun onFailure(call:Call<String>, t:Throwable) {
             progressBar.visibility = View.GONE
@@ -103,11 +128,13 @@ class FeedActivity : AppCompatActivity() {
         searchViewAndroidActionBar.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 searchViewAndroidActionBar.clearFocus()
-                SearchWord(query)
+                searchFilter(query)
                 return true
             }
 
             override fun onQueryTextChange(newText: String): Boolean {
+                searchFilter(newText)
+
                 return false
             }
         })
@@ -118,5 +145,35 @@ class FeedActivity : AppCompatActivity() {
         progressBar.visibility = View.VISIBLE
         mCallNewsList = mRetrofitAPI.getSearchList(word)
         mCallNewsList.enqueue(mRetrofitCallback)
+    }
+
+    private fun searchFilter(str: String) {
+        val word = str.toLowerCase()
+        var newData = ArrayList<LiveSliderFeed<News>>()
+
+        if (mOriginalData != null)
+            for (i in mOriginalData!!.iterator()) {
+                Log.v("hihi", i.category)
+                var newItem = LiveSliderFeed<News>()
+                newItem.category = i.category
+                newItem.items = ArrayList<News>()
+                if (i.items != null)
+                    for (j in i.items!!.iterator()) {
+                        Log.v("hihi", j.title)
+
+                        if (j.title.toLowerCase().contains(word) || j.description.toLowerCase().contains(word)) {
+                            Log.v("hihi", "hihihi")
+                            newItem.items!!.add(j)
+                        }
+                    }
+                Log.v("hihi", ""+newItem.items!!.size)
+
+                newData.add(newItem)
+            }
+
+        Log.v("hihi", ""+newData.size)
+        val array = Array(newData.size) { LiveSliderFeed<News>() }
+
+        mFeedAdapter!!.setData(newData.toArray(array))
     }
 }

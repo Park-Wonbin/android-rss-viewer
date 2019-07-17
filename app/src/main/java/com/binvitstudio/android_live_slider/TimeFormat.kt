@@ -11,7 +11,7 @@ object TimeFormat {
 
     fun formatTimeString(str: String): String {
         val df = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-        val regTime = df.parse(str).time
+        val regTime = df.parse(str).time + ( 1000 * 60 * 60 * 9 )
 
         val curTime: Long = System.currentTimeMillis()
         var diffTime: Long = (curTime - regTime) / 1000
