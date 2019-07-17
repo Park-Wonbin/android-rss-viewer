@@ -51,6 +51,7 @@
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"/>
 			
+			<!-- Use Git library (https://github.com/ongakuer/CircleIndicator) -->
 			<me.relex.circleindicator.CircleIndicator
 				android:id="@+id/indicator"
 				android:layout_width="match_parent"

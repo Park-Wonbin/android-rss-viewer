@@ -6,16 +6,40 @@ import android.view.ViewGroup
 import androidx.core.view.iterator
 import androidx.viewpager.widget.PagerAdapter
 
+/**
+ * A custom PagerAdapter for live slider.
+ *
+ * @param T the type of the RSS-feed item that you want.
+ */
 abstract class LiveSliderPagerAdapter<T> : PagerAdapter() {
     private lateinit var viewContainer : ViewGroup
     private lateinit var context: Context
     private var liveSliderFeed : LiveSliderFeed<T>? = null
     private var animation : Boolean = false
 
-    abstract fun startAnimation(context: Context, view: View)
-    abstract fun stopAnimation(context: Context, view: View)
+    /**
+     * Inherit and implement this function to create *view*
+     *
+     * You have to create view using inflater and set RSS-feed data(item) at view's objects.
+     *
+     * @param item the type of the one RSS-feed data value that you want.
+     * @return *view* that you create and set RSS-feed data.
+     */
     protected abstract fun createView(context: Context, container: ViewGroup, item: T) : View
 
+    /**
+     * Inherit and implement the two functions below to set up view animation.
+     *
+     * You can set up animation for each view's objects.
+     *
+     * @param view view that displayed in ViewPager.
+     */
+    abstract fun startAnimation(context: Context, view: View)
+    abstract fun stopAnimation(context: Context, view: View)
+
+    /**
+     * Call this function to set the RSS-feed data and to set whether or not to be animated for one ViewPager.
+     */
     fun setData(liveSliderFeed: LiveSliderFeed<T>?, animation: Boolean) {
         this.liveSliderFeed = liveSliderFeed
         this.animation = animation
@@ -25,6 +49,11 @@ abstract class LiveSliderPagerAdapter<T> : PagerAdapter() {
         this.context = context
     }
 
+    /**
+     * Call this function to refresh the animation when the view displayed in ViewPager changed.
+     *
+     * @param position position of the view that displayed in ViewPager.
+     */
     fun refreshAnimation(position: Int) {
         for (v in viewContainer.iterator()) {
             if (animation && v.id == position) {
