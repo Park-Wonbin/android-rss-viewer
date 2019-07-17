@@ -22,13 +22,12 @@
 		android:layout_margin="20dp"
 		app:cardCornerRadius="20dp"
 		app:cardElevation="7dp"
-		app:cardBackgroundColor="#fff"
-		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintLeft_toLeftOf="parent"
-		app:layout_constraintRight_toRightOf="parent"
-		app:layout_constraintTop_toTopOf="parent">
+		app:cardBackgroundColor="#fff">
 		
-		<FrameLayout android:layout_width="match_parent" android:layout_height="match_parent">
+		<FrameLayout
+			android:layout_width="match_parent"
+			android:layout_height="match_parent">
+			
 			<LinearLayout
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
@@ -40,12 +39,11 @@
 						   android:layout_height="30dp"
 						   android:src="@drawable/ic_action_search_dark"
 						   android:layout_margin="10dp"/>
-				<TextView
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:text="There are no results to be shown."
-					android:textSize="13dp"/>
-			
+				
+				<TextView android:layout_width="wrap_content"
+						  android:layout_height="wrap_content"
+						  android:text="There are no results to be shown."
+						  android:textSize="13dp"/>
 			</LinearLayout>
 			
 			<com.poapper.liveslider.LiveSliderViewPager
@@ -57,8 +55,7 @@
 				android:id="@+id/indicator"
 				android:layout_width="match_parent"
 				android:layout_height="48dp"
-				android:layout_gravity="top"
-				android:layout_marginBottom="20dp"/>
+				android:layout_gravity="top"/>
 		</FrameLayout>
 	
 	</androidx.cardview.widget.CardView>
