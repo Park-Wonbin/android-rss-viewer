@@ -16,11 +16,11 @@ import android.view.Menu
 import android.view.View
 import androidx.appcompat.widget.SearchView
 import com.github.poscat.R
+import com.github.poscat.liveslider.LiveSliderAdapter
+import com.github.poscat.liveslider.LiveSliderFeed
 import kotlinx.android.synthetic.main.feed.*
 import com.github.ybq.android.spinkit.style.Wave
 import com.google.gson.reflect.TypeToken
-import com.poapper.liveslider.LiveSliderFeed
-import com.poapper.liveslider.LiveSliderAdapter
 
 
 class FeedActivity : AppCompatActivity() {
@@ -122,7 +122,7 @@ class FeedActivity : AppCompatActivity() {
 
     private fun searchFilter(str: String) {
         val word = str.toLowerCase()
-        var newData = ArrayList<LiveSliderFeed<News>>()
+        val newData = ArrayList<LiveSliderFeed<News>>()
 
         if (mOriginalData != null)
             for (i in mOriginalData!!.iterator()) {
