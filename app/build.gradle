@@ -40,6 +40,6 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'com.github.zomato:androidphotofilters:1.0.2'
     implementation 'com.github.ybq:Android-SpinKit:1.2.0'
-    implementation 'com.github.shhj1998:android-live-slider:1.0.2'
+    implementation 'com.github.shhj1998:android-live-slider:1.0.3'
 
 }
