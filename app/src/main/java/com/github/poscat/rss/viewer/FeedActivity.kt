@@ -75,9 +75,6 @@ class FeedActivity : AppCompatActivity() {
         mCallNewsList.enqueue(mRetrofitCallback)
 
         swipe_layout.setOnRefreshListener {
-            swipe_layout.isRefreshing = false
-            swipe_layout.visibility = View.GONE
-            progressBar.visibility = View.VISIBLE
             mCallNewsList = mRetrofitAPI.getNewsList()
             mCallNewsList.enqueue(mRetrofitCallback)
         }
@@ -85,8 +82,9 @@ class FeedActivity : AppCompatActivity() {
 
     private val mRetrofitCallback = object: Callback<String> {
         override fun onResponse(call:Call<String>, response: Response<String>) {
-            progressBar.visibility = View.GONE
             swipe_layout.visibility = View.VISIBLE
+            swipe_layout.isRefreshing = false
+            progressBar.visibility = View.GONE
 
             val result = response.body()
             val listType = object : TypeToken<Array<RSSJson>>() {}.type
@@ -102,8 +100,9 @@ class FeedActivity : AppCompatActivity() {
             mOriginalData = data
         }
         override fun onFailure(call:Call<String>, t:Throwable) {
-            progressBar.visibility = View.GONE
             swipe_layout.visibility = View.VISIBLE
+            swipe_layout.isRefreshing = false
+            progressBar.visibility = View.GONE
 
             t.printStackTrace()
         }
