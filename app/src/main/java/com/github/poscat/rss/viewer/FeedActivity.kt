@@ -22,7 +22,6 @@ import kotlinx.android.synthetic.main.feed.*
 import com.github.ybq.android.spinkit.style.Wave
 import com.google.gson.reflect.TypeToken
 
-
 class FeedActivity : AppCompatActivity() {
 
     // for Parsing
@@ -65,6 +64,7 @@ class FeedActivity : AppCompatActivity() {
         wave.color = Color.parseColor("#26A69A")
         progressBar.indeterminateDrawable = wave
         progressBar.visibility = View.VISIBLE
+        swipe_layout.visibility = View.GONE
 
         // Retrofit ---
         mGson = Gson()
@@ -73,16 +73,25 @@ class FeedActivity : AppCompatActivity() {
 
         mCallNewsList = mRetrofitAPI.getNewsList()
         mCallNewsList.enqueue(mRetrofitCallback)
+
+        swipe_layout.setOnRefreshListener {
+            swipe_layout.isRefreshing = false
+            swipe_layout.visibility = View.GONE
+            progressBar.visibility = View.VISIBLE
+            mCallNewsList = mRetrofitAPI.getNewsList()
+            mCallNewsList.enqueue(mRetrofitCallback)
+        }
     }
 
     private val mRetrofitCallback = object: Callback<String> {
         override fun onResponse(call:Call<String>, response: Response<String>) {
             progressBar.visibility = View.GONE
+            swipe_layout.visibility = View.VISIBLE
 
             val result = response.body()
             val listType = object : TypeToken<Array<RSSJson>>() {}.type
             val rawData = mGson.fromJson<Array<RSSJson>>(result, listType)
-            var data = Array(rawData.size) { LiveSliderFeed<News>() }
+            val data = Array(rawData.size) { LiveSliderFeed<News>() }
 
             for ((idx, obj) in rawData.withIndex()) {
                 data[idx].category = obj.title
@@ -94,6 +103,7 @@ class FeedActivity : AppCompatActivity() {
         }
         override fun onFailure(call:Call<String>, t:Throwable) {
             progressBar.visibility = View.GONE
+            swipe_layout.visibility = View.VISIBLE
 
             t.printStackTrace()
         }
@@ -126,7 +136,7 @@ class FeedActivity : AppCompatActivity() {
 
         if (mOriginalData != null)
             for (i in mOriginalData!!.iterator()) {
-                var newItem = LiveSliderFeed<News>()
+                val newItem = LiveSliderFeed<News>()
                 newItem.category = i.category
                 newItem.items = ArrayList<News>()
                 if (i.items != null)
