@@ -15,7 +15,6 @@ import androidx.core.view.MenuItemCompat
 import android.view.Menu
 import android.view.View
 import androidx.appcompat.widget.SearchView
-import com.github.poscat.R
 import com.github.poscat.liveslider.LiveSliderAdapter
 import com.github.poscat.liveslider.LiveSliderFeed
 import kotlinx.android.synthetic.main.feed.*

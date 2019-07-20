@@ -9,7 +9,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
-import com.github.poscat.R
 import com.github.poscat.liveslider.LiveSliderPagerAdapter
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.page.view.*
