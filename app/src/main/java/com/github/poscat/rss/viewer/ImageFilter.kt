@@ -15,6 +15,12 @@ class ImageFilter: Transformation {
         System.loadLibrary("NativeImageProcessor")
 
         var myFilter = Filter()
+        /**
+         * If you want your photo filter added to it. I just lowered the brightness.
+         * Please refer to the library below.
+         *
+         * https://github.com/Zomato/AndroidPhotoFilters
+         */
         myFilter.addSubFilter(BrightnessSubFilter(-25))
 
         if (source!= null) {

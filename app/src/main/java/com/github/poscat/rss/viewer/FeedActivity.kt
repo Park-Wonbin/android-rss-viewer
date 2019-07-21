@@ -39,26 +39,22 @@ class FeedActivity : AppCompatActivity() {
     private var mRecyclerView: RecyclerView? = null
     private var mFeedAdapter: LiveSliderAdapter<News>? = null
 
+    // for Searching
     private var mOriginalData: Array<LiveSliderFeed<News>>? = null
 
     // for Subscribe
-    private var listItems: Array<String>? = null
-    private var listItemsId: Array<String>? = null
-    private var checkedItems: BooleanArray? = null
-    private var mUserItems: ArrayList<Int> = ArrayList()
     private var mSubscribeChannelId: String? = null
     private lateinit var pref: SharedPreferences
     private lateinit var editor: SharedPreferences.Editor
-
     private var channelIdList = mutableListOf<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.feed)
 
+        // SharedPreferences for the list of subscribed ---
         pref = getSharedPreferences("SUBSCRIBE", Activity.MODE_PRIVATE)
         editor = pref.edit()
-
         mSubscribeChannelId = pref.getString("channelId", "")
         if (mSubscribeChannelId != "") {
             channelIdList = mSubscribeChannelId.toString().split("/") as MutableList<String>
@@ -73,7 +69,6 @@ class FeedActivity : AppCompatActivity() {
         mRecyclerView!!.layoutManager = layoutManager
         mRecyclerView!!.setHasFixedSize(true)
         mRecyclerView!!.adapter = mFeedAdapter
-
         mRecyclerView!!.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
@@ -89,7 +84,7 @@ class FeedActivity : AppCompatActivity() {
             }
         })
 
-        // ProgressBar
+        // ProgressBar ---
         val wave = Wave()
         wave.color = Color.parseColor("#26A69A")
         progressBar.indeterminateDrawable = wave
@@ -101,12 +96,17 @@ class FeedActivity : AppCompatActivity() {
         mRetrofit = Retrofit.Builder().baseUrl("https://rss-search-api.herokuapp.com").addConverterFactory(ScalarsConverterFactory.create()).build()
         mRetrofitAPI = mRetrofit.create(RetrofitAPI::class.java)
 
+        /**
+         * Get News RSS Data
+         */
         getRSSData()
         swipe_layout.setOnRefreshListener {
             getRSSData()
         }
 
+        // Subscribe Button
         fab.setOnClickListener {
+            // Get news channel list
             mCallNewsList = mRetrofitAPI.getChannelList()
             mCallNewsList.enqueue(mChannelCallback)
         }
@@ -152,10 +152,11 @@ class FeedActivity : AppCompatActivity() {
             val listType = object : TypeToken<Array<Channel>>() {}.type
             val rawData = mGson.fromJson<Array<Channel>>(result, listType)
 
-            mUserItems.clear()
-            listItems = Array<String>(rawData.size) { "" }
-            listItemsId = Array<String>(rawData.size) { "" }
-            checkedItems = BooleanArray(rawData!!.size)
+            var mUserItems: ArrayList<Int> = ArrayList()
+            var listItems = Array<String>(rawData.size) { "" }
+            var listItemsId = Array<String>(rawData.size) { "" }
+            var checkedItems = BooleanArray(rawData!!.size)
+
             for ((idx, obj) in rawData.withIndex()) {
                 listItems!![idx] = obj.title
                 listItemsId!![idx] = obj.id
@@ -167,6 +168,7 @@ class FeedActivity : AppCompatActivity() {
                 }
             }
 
+            // Create Dialog for Subscribe
             val mBuilder = AlertDialog.Builder(this@FeedActivity)
             mBuilder.setTitle("보고싶은 채널을 구독해주세요.")
             mBuilder.setMultiChoiceItems(
@@ -204,12 +206,10 @@ class FeedActivity : AppCompatActivity() {
                 }
             })
 
-
             val mDialog = mBuilder.create()
             mDialog.show()
         }
         override fun onFailure(call:Call<String>, t:Throwable) {
-
             t.printStackTrace()
         }
     }
@@ -246,6 +246,7 @@ class FeedActivity : AppCompatActivity() {
                 newItem.items = ArrayList<News>()
                 if (i.items != null)
                     for (j in i.items!!.iterator()) {
+                        // Check if the title or description contain the 'word'.
                         if (j.title.toLowerCase().contains(word) || j.description.toLowerCase().contains(word)) {
                             newItem.items!!.add(j)
                         }
