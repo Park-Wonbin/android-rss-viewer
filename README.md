@@ -15,7 +15,7 @@ Preview
 
 > The RSS viewer with smooth animation.
 
-![](https://binvitstudio.com/rss-viewer/rss-viewer-1.gif)
+![](https://binvitstudio.com/rss-viewer/rss-viewer-1.gif){: width="50%" height="50"}
 
 
 > Various news at once!
@@ -33,7 +33,7 @@ Preview
 ![](https://binvitstudio.com/rss-viewer/rss-viewer-4.gif)
 
 
-Used Git Library
+Used Library
 ------------
 
 
