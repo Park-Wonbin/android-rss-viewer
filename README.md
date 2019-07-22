@@ -9,28 +9,27 @@ We used our awesome live-slider library.
 - [android-live-slider](https://github.com/shhj1998/android-live-slider)
 
 
-
 Preview
 ------------
 
 > The RSS viewer with smooth animation.
 
-![](https://binvitstudio.com/rss-viewer/rss-viewer-1.gif){: width="50%" height="50"}
+<img src="https://binvitstudio.com/rss-viewer/rss-viewer-1.gif" width="30%" height="30%"/>
 
 
 > Various news at once!
 
-![](https://binvitstudio.com/rss-viewer/rss-viewer-2.gif)
+<img src="https://binvitstudio.com/rss-viewer/rss-viewer-2.gif" width="30%" height="30%"/>
 
 
 > Subscribe the news you want.
 
-![](https://binvitstudio.com/rss-viewer/rss-viewer-3.gif)
+<img src="https://binvitstudio.com/rss-viewer/rss-viewer-3.gif" width="30%" height="30%"/>
 
 
 > You can search by word.
 
-![](https://binvitstudio.com/rss-viewer/rss-viewer-4.gif)
+<img src="https://binvitstudio.com/rss-viewer/rss-viewer-4.gif" width="30%" height="30%"/>
 
 
 Used Library
