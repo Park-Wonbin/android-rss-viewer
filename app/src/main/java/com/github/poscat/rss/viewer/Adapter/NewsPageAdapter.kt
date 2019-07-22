@@ -1,4 +1,4 @@
-package com.github.poscat.rss.viewer
+package com.github.poscat.rss.viewer.Adapter
 
 import android.content.Context
 import android.content.Intent
@@ -9,7 +9,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
+<<<<<<< Updated upstream:app/src/main/java/com/github/poscat/rss/viewer/NewsPageAdapter.kt
+import com.github.poscat.R
+import com.poapper.liveslider.LiveSliderPagerAdapter
+=======
 import com.github.poscat.liveslider.LiveSliderPagerAdapter
+import com.github.poscat.rss.viewer.DataType.News
+import com.github.poscat.rss.viewer.Activity.NewsActivity
+import com.github.poscat.rss.viewer.R
+import com.github.poscat.rss.viewer.Utility.ImageFilter
+import com.github.poscat.rss.viewer.Utility.TimeFormat
+>>>>>>> Stashed changes:app/src/main/java/com/github/poscat/rss/viewer/Adapter/NewsPageAdapter.kt
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.page.view.*
 

@@ -1,4 +1,4 @@
-package com.github.poscat.rss.viewer
+package com.github.poscat.rss.viewer.Utility
 
 import android.graphics.Bitmap
 import com.squareup.picasso.Transformation

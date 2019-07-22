@@ -1,4 +1,4 @@
-package com.github.poscat.rss.viewer
+package com.github.poscat.rss.viewer.DataType
 
 import android.graphics.Bitmap
 

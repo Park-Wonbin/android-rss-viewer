@@ -1,4 +1,4 @@
-package com.github.poscat.rss.viewer
+package com.github.poscat.rss.viewer.Utility
 
 import retrofit2.Call
 import retrofit2.http.GET
