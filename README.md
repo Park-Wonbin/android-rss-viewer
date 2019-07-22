@@ -35,6 +35,13 @@ Preview
 Used Library
 ------------
 
+- [Retrofit](https://github.com/square/retrofit)
+- [Gson](https://github.com/google/gson)
+- [Picasso](https://github.com/square/picasso)
+- [CircleIndicator](https://github.com/ongakuer/CircleIndicator)
+- [AndroidPhotoFilters](https://github.com/Zomato/AndroidPhotoFilters)
+- [Android-SpinKit](https://github.com/ybq/Android-SpinKit)
+
 
 License
 ------------
