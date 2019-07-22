@@ -33,6 +33,7 @@ import com.github.ybq.android.spinkit.style.Wave
 import com.google.gson.reflect.TypeToken
 import kotlin.collections.ArrayList
 
+
 class FeedActivity : AppCompatActivity() {
 
     // for Parsing
@@ -192,7 +193,7 @@ class FeedActivity : AppCompatActivity() {
             mBuilder.setPositiveButton("완료", object: DialogInterface.OnClickListener {
                 override fun onClick(dialogInterface:DialogInterface, which:Int) {
                     var item = ""
-                    channelIdList.clear()
+                    channelIdList = mutableListOf<String>()
                     for (i in 0 until mUserItems.size) {
                         channelIdList.add(listItemsId!![mUserItems.get(i)])
                         item = item + listItemsId!![mUserItems.get(i)]
