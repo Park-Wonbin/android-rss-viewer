@@ -17,24 +17,31 @@ Requirements
 Screenshots
 ------------
 
-> Android RSS viewer with smooth animation.
+> Android RSS viewer with rich, live animations.
 
-<img src="https://github.com/Park-Wonbin/android-rss-viewer/blob/master/screenshot/rss-viewer-1.gif" width="30%" height="30%"/>
-
+<p align="center">
+    <img src="https://github.com/Park-Wonbin/android-rss-viewer/blob/master/screenshot/rss-viewer-1.gif" width="30%"/>
+</p>
 
 > Various news at once!
 
-<img src="https://github.com/Park-Wonbin/android-rss-viewer/blob/master/screenshot/rss-viewer-2.gif" width="30%" height="30%"/>
+<p align="center">
+    <img src="https://github.com/Park-Wonbin/android-rss-viewer/blob/master/screenshot/rss-viewer-2.gif" width="30%"/>
+</p>
 
 
-> Subscribe news only you want.
+> Display news that is subscribed by you.
 
-<img src="https://github.com/Park-Wonbin/android-rss-viewer/blob/master/screenshot/rss-viewer-3.gif" width="30%" height="30%"/>
+<p align="center">
+    <img src="https://github.com/Park-Wonbin/android-rss-viewer/blob/master/screenshot/rss-viewer-3.gif" width="30%"/>
+</p>
 
 
-> You can search news by word.
+> You can search news by words.
 
-<img src="https://github.com/Park-Wonbin/android-rss-viewer/blob/master/screenshot/rss-viewer-4.gif" width="30%" height="30%"/>
+<p align="center">
+    <img src="https://github.com/Park-Wonbin/android-rss-viewer/blob/master/screenshot/rss-viewer-4.gif" width="30%"/>
+</p>
 
 
 Library Used
