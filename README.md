@@ -8,6 +8,12 @@ We used our awesome android-live-slider library for developing our application.
 - [`android-live-slider`](https://github.com/shhj1998/android-live-slider)
 
 
+Requirements
+------------
+- Minimum SDK Version : 26
+- Recommended SDK Version : 28
+
+
 Screenshots
 ------------
 

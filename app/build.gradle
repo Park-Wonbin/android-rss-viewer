@@ -8,7 +8,7 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.github.poscat.rss.viewer"
-        minSdkVersion 28
+        minSdkVersion 26
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -40,6 +40,5 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'com.github.zomato:androidphotofilters:1.0.2'
     implementation 'com.github.ybq:Android-SpinKit:1.2.0'
-    implementation 'com.github.shhj1998:android-live-slider:1.0.3'
-
+    implementation 'com.github.shhj1998:android-live-slider:1.0.4'
 }
