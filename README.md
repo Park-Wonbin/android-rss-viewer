@@ -19,22 +19,22 @@ Screenshots
 
 > Android RSS viewer with smooth animation.
 
-<img src="https://binvitstudio.com/rss-viewer/rss-viewer-1.gif" width="30%" height="30%"/>
+<img src="https://github.com/Park-Wonbin/android-rss-viewer/blob/master/screenshot/rss-viewer-1.gif" width="30%" height="30%"/>
 
 
 > Various news at once!
 
-<img src="https://binvitstudio.com/rss-viewer/rss-viewer-2.gif" width="30%" height="30%"/>
+<img src="https://github.com/Park-Wonbin/android-rss-viewer/blob/master/screenshot/rss-viewer-2.gif" width="30%" height="30%"/>
 
 
 > Subscribe news only you want.
 
-<img src="https://binvitstudio.com/rss-viewer/rss-viewer-3.gif" width="30%" height="30%"/>
+<img src="https://github.com/Park-Wonbin/android-rss-viewer/blob/master/screenshot/rss-viewer-3.gif" width="30%" height="30%"/>
 
 
 > You can search news by word.
 
-<img src="https://binvitstudio.com/rss-viewer/rss-viewer-4.gif" width="30%" height="30%"/>
+<img src="https://github.com/Park-Wonbin/android-rss-viewer/blob/master/screenshot/rss-viewer-4.gif" width="30%" height="30%"/>
 
 
 Library Used
