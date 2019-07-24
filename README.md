@@ -30,14 +30,14 @@ Screenshots
 </p>
 
 
-> Display news that is subscribed by you.
+> Display news that you are subscribing.
 
 <p align="center">
     <img src="https://github.com/Park-Wonbin/android-rss-viewer/blob/master/screenshot/rss-viewer-3.gif" width="30%"/>
 </p>
 
 
-> You can search news by words.
+> You can search news by words!
 
 <p align="center">
     <img src="https://github.com/Park-Wonbin/android-rss-viewer/blob/master/screenshot/rss-viewer-4.gif" width="30%"/>
