@@ -9,13 +9,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
+import com.bumptech.glide.Glide
 import com.github.poscat.liveslider.LiveSliderPagerAdapter
 import com.github.poscat.rss.viewer.DataType.News
 import com.github.poscat.rss.viewer.Activity.NewsActivity
 import com.github.poscat.rss.viewer.R
 import com.github.poscat.rss.viewer.Utility.ImageFilter
 import com.github.poscat.rss.viewer.Utility.TimeFormat
-import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.page.view.*
 
 class NewsPageAdapter : LiveSliderPagerAdapter<News>() {
@@ -36,10 +36,11 @@ class NewsPageAdapter : LiveSliderPagerAdapter<News>() {
         )
 
         if (item.enclosures != null)
-            Picasso.get().load(item.enclosures!![0].url)
+            Glide.with(context).load(item.enclosures!![0].url)
                 .placeholder(R.drawable.loading_img)
+                .transform(ImageFilter())
                 .error(R.drawable.default_img)
-                .transform(ImageFilter()).into(view.image)
+                .into(view.image)
 
         view.setOnClickListener {
             val intent = Intent(context, NewsActivity::class.java)
