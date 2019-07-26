@@ -75,7 +75,9 @@
 			android:shadowColor="#000000"
 			android:shadowRadius="1.0"
 			android:shadowDx="1.0"
-			android:shadowDy="1.0"/>
+			android:shadowDy="1.0"
+			android:maxLines="2"
+			android:ellipsize="end"/>
 	</LinearLayout>
 
 	
@@ -90,6 +92,8 @@
 		android:layout_margin="15dp"
 		android:layout_gravity="center"
 		android:visibility="invisible"
+		android:maxLines="3"
+		android:ellipsize="end"
 	/>
 
 </FrameLayout>

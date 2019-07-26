@@ -5,7 +5,6 @@ import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -24,8 +23,8 @@ import com.github.poscat.liveslider.LiveSliderAdapter
 import com.github.poscat.liveslider.LiveSliderFeed
 import com.github.poscat.rss.viewer.Adapter.NewsPageAdapter
 import com.github.poscat.rss.viewer.DataType.Channel
+import com.github.poscat.rss.viewer.DataType.Items
 import com.github.poscat.rss.viewer.DataType.News
-import com.github.poscat.rss.viewer.DataType.RSSJson
 import com.github.poscat.rss.viewer.R
 import com.github.poscat.rss.viewer.Utility.RetrofitAPI
 import kotlinx.android.synthetic.main.feed.*
@@ -44,10 +43,10 @@ class FeedActivity : AppCompatActivity() {
 
     // for RecyclerView
     private var mRecyclerView: RecyclerView? = null
-    private var mFeedAdapter: LiveSliderAdapter<News>? = null
+    private var mFeedAdapter: LiveSliderAdapter<Items>? = null
 
     // for Searching
-    private var mOriginalData: Array<LiveSliderFeed<News>>? = null
+    private var mOriginalData: Array<LiveSliderFeed<Items>>? = null
 
     // for Subscribe
     private var mSubscribeChannelId: String? = null
@@ -132,14 +131,20 @@ class FeedActivity : AppCompatActivity() {
             progressBar.visibility = View.GONE
 
             val result = response.body()
-            val listType = object : TypeToken<Array<RSSJson>>() {}.type
-            val rawData = mGson.fromJson<Array<RSSJson>>(result, listType)
-            val data = Array(rawData.size) { LiveSliderFeed<News>() }
+            val listType = object : TypeToken<Array<News>>() {}.type
+            val rawData = mGson.fromJson<Array<News>>(result, listType)
+            val size = rawData?.size ?: 0
+            val data = Array(size) { LiveSliderFeed<Items>() }
 
-            for ((idx, obj) in rawData.withIndex()) {
-                data[idx].category = obj.title
-                data[idx].items = obj.items
-            }
+            if (rawData != null)
+                for ((idx, obj) in rawData.withIndex()) {
+                    if (obj.title == null) {
+                        data[idx].category = "Not yet updated"
+                        continue
+                    }
+                    data[idx].category = obj.title
+                    data[idx].items = obj.items
+                }
 
             mFeedAdapter!!.setData(data)
             mOriginalData = data
@@ -165,7 +170,8 @@ class FeedActivity : AppCompatActivity() {
             var checkedItems = BooleanArray(rawData!!.size)
 
             for ((idx, obj) in rawData.withIndex()) {
-                listItems!![idx] = obj.title
+                if (obj.title == null) listItems!![idx] = "Not yet updated"
+                else listItems!![idx] = obj.title
                 listItemsId!![idx] = obj.id
                 for (i in channelIdList) {
                     if (i == obj.id) {
@@ -244,13 +250,13 @@ class FeedActivity : AppCompatActivity() {
 
     private fun searchFilter(str: String) {
         val word = str.toLowerCase()
-        val newData = ArrayList<LiveSliderFeed<News>>()
+        val newData = ArrayList<LiveSliderFeed<Items>>()
 
         if (mOriginalData != null)
             for (i in mOriginalData!!.iterator()) {
-                val newItem = LiveSliderFeed<News>()
+                val newItem = LiveSliderFeed<Items>()
                 newItem.category = i.category
-                newItem.items = ArrayList<News>()
+                newItem.items = ArrayList<Items>()
                 if (i.items != null)
                     for (j in i.items!!.iterator()) {
                         // Check if the title or description contain the 'word'.
@@ -261,7 +267,7 @@ class FeedActivity : AppCompatActivity() {
                 newData.add(newItem)
             }
 
-        val array = Array(newData.size) { LiveSliderFeed<News>() }
+        val array = Array(newData.size) { LiveSliderFeed<Items>() }
 
         mFeedAdapter!!.setData(newData.toArray(array))
     }

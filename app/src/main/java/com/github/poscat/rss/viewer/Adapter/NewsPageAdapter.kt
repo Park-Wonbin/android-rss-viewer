@@ -13,20 +13,21 @@ import com.bumptech.glide.Glide
 import com.github.poscat.liveslider.LiveSliderPagerAdapter
 import com.github.poscat.rss.viewer.DataType.News
 import com.github.poscat.rss.viewer.Activity.NewsActivity
+import com.github.poscat.rss.viewer.DataType.Items
 import com.github.poscat.rss.viewer.R
 import com.github.poscat.rss.viewer.Utility.ImageFilter
 import com.github.poscat.rss.viewer.Utility.TimeFormat
 import kotlinx.android.synthetic.main.page.view.*
 
-class NewsPageAdapter : LiveSliderPagerAdapter<News>() {
-    override fun createView(context: Context, container: ViewGroup, item: News): View {
+class NewsPageAdapter : LiveSliderPagerAdapter<Items>() {
+    override fun createView(context: Context, container: ViewGroup, item: Items): View {
         val inflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val view = inflater.inflate(R.layout.page, container, false)
 
         view.creator.text = item.author.name
         view.time.text = TimeFormat.formatTimeString(item.published)
         view.title.text = item.title
-        view.description.text = item.description + "..."
+        view.description.text = item.description
 
         val span = view.description.text as Spannable
         span.setSpan(
