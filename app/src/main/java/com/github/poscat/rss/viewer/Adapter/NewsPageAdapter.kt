@@ -36,9 +36,11 @@ class NewsPageAdapter : LiveSliderPagerAdapter<Items>() {
         // Set Description
         val sb = SpannableStringBuilder()
         val attrAdditional = SpannableString(item.description)
-        attrAdditional.setSpan( BackgroundColorSpan(Color.parseColor("#B3000000")),
+        attrAdditional.setSpan(
+            BackgroundColorSpan(Color.parseColor("#B3000000")),
             0, item.description.length,
-            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
         sb.append(attrAdditional)
 
         view.description.setText(sb, TextView.BufferType.NORMAL)
