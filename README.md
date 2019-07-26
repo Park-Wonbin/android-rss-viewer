@@ -5,7 +5,7 @@
 Android RSS Viewer refines meaningful elements of rss and provides real-time summary to users in slider form. It provides a wonderful UX to users for watching collection of subscribed news.
 
 We used our awesome android-live-slider library for developing our application.
-- [`android-live-slider`](https://github.com/shhj1998/android-live-slider)
+- [`Android-Live-Slider`](https://github.com/shhj1998/android-live-slider)
 
 
 Requirements
@@ -47,7 +47,7 @@ Screenshots
 Library Used
 ------------
 
-- [android-live-slider](https://github.com/shhj1998/android-live-slider) - Main library used in our application. It provides components for live-animation recyclerview with viewpager.
+- [Android-Live-Slider](https://github.com/shhj1998/android-live-slider) - Provides components for live animation Slide View.
 - [Retrofit](https://github.com/square/retrofit) - Provides features to make a internet request and fetch data from APIs.
 - [Gson](https://github.com/google/gson) - Parse json form response to RSS object used in our application.
 - [Glide](https://github.com/bumptech/glide) - An image loading and caching library for Android focused on smooth scrolling.
