@@ -32,7 +32,6 @@ import com.github.ybq.android.spinkit.style.Wave
 import com.google.gson.reflect.TypeToken
 import kotlin.collections.ArrayList
 
-
 class FeedActivity : AppCompatActivity() {
 
     // for Parsing

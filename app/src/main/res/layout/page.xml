@@ -24,34 +24,8 @@
 			android:orientation="horizontal" android:layout_marginBottom="10dp">
 			
 			<TextView
-				android:id="@+id/creator"
+				android:id="@+id/creator_time"
 				android:text="Creator"
-				android:textSize="13dp"
-				android:textStyle="bold"
-				android:textColor="#fff"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:shadowColor="#000000"
-				android:shadowRadius="1.0"
-				android:shadowDx="1.0"
-				android:shadowDy="1.0"/>
-			
-			<TextView android:text="·"
-					  android:textSize="13dp"
-					  android:textStyle="bold"
-					  android:textColor="#fff"
-					  android:layout_width="wrap_content"
-					  android:layout_height="wrap_content"
-					  android:layout_marginLeft="10dp"
-					  android:layout_marginRight="10dp"
-					  android:shadowColor="#000000"
-					  android:shadowRadius="1.0"
-					  android:shadowDx="1.0"
-					  android:shadowDy="1.0"/>
-			
-			<TextView
-				android:id="@+id/time"
-				android:text="Time"
 				android:textSize="13dp"
 				android:textStyle="bold"
 				android:textColor="#fff"
@@ -83,17 +57,16 @@
 	
 	<TextView
 		android:id="@+id/description"
-		android:bufferType="spannable"
 		android:text="Description"
 		android:textSize="14dp"
 		android:textColor="#fff"
-		android:layout_width="wrap_content"
+		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_margin="15dp"
 		android:layout_gravity="center"
 		android:visibility="invisible"
-		android:maxLines="3"
+		android:maxLines="4"
 		android:ellipsize="end"
-	/>
+		android:singleLine="false"/>
 
 </FrameLayout>
