@@ -50,7 +50,7 @@ Library Used
 - [android-live-slider](https://github.com/shhj1998/android-live-slider) - Main library used in our application. It provides components for live-animation recyclerview with viewpager.
 - [Retrofit](https://github.com/square/retrofit) - Provides features to make a internet request and fetch data from APIs.
 - [Gson](https://github.com/google/gson) - Parse json form response to RSS object used in our application.
-- [Picasso](https://github.com/square/picasso) - A powerful image downloading and caching library for Android.
+- [Glide](https://github.com/bumptech/glide) - An image loading and caching library for Android focused on smooth scrolling.
 - [CircleIndicator](https://github.com/ongakuer/CircleIndicator) - A lightweight indicator like in nexus 5 launcher.
 - [AndroidPhotoFilters](https://github.com/Zomato/AndroidPhotoFilters) - Android photo filter library.
 - [Android-SpinKit](https://github.com/ybq/Android-SpinKit) - Used for loading animation.
