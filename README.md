@@ -20,27 +20,34 @@ Screenshots
 > Android RSS viewer with rich, live animations.
 
 <p align="center">
-    <img src="https://github.com/Park-Wonbin/android-rss-viewer/blob/master/screenshot/rss-viewer-1.gif" width="30%"/>
+    <img src="https://github.com/Park-Wonbin/android-rss-viewer/blob/master/screenshot/new-rss-viewer-1.gif" width="30%"/>
 </p>
 
 > Various news at once!
 
 <p align="center">
-    <img src="https://github.com/Park-Wonbin/android-rss-viewer/blob/master/screenshot/rss-viewer-2.gif" width="30%"/>
+    <img src="https://github.com/Park-Wonbin/android-rss-viewer/blob/master/screenshot/new-rss-viewer-2.gif" width="30%"/>
 </p>
 
 
 > Display news that you are subscribing.
 
 <p align="center">
-    <img src="https://github.com/Park-Wonbin/android-rss-viewer/blob/master/screenshot/rss-viewer-3.gif" width="30%"/>
+    <img src="https://github.com/Park-Wonbin/android-rss-viewer/blob/master/screenshot/new-rss-viewer-3.gif" width="30%"/>
 </p>
 
 
 > You can search news by words!
 
 <p align="center">
-    <img src="https://github.com/Park-Wonbin/android-rss-viewer/blob/master/screenshot/rss-viewer-4.gif" width="30%"/>
+    <img src="https://github.com/Park-Wonbin/android-rss-viewer/blob/master/screenshot/new-rss-viewer-4.gif" width="30%"/>
+</p>
+
+
+> We also supports RSS containing the video.
+
+<p align="center">
+    <img src="https://github.com/Park-Wonbin/android-rss-viewer/blob/master/screenshot/new-rss-viewer-5.gif" width="30%"/>
 </p>
 
 
