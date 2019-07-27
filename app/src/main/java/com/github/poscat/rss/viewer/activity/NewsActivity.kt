@@ -1,4 +1,4 @@
-package com.github.poscat.rss.viewer.Activity
+package com.github.poscat.rss.viewer.activity
 
 import android.content.Intent
 import android.graphics.Color

@@ -1,4 +1,4 @@
-package com.github.poscat.rss.viewer.Adapter
+package com.github.poscat.rss.viewer.adapter
 
 import android.content.Context
 import android.content.Intent
@@ -17,11 +17,11 @@ import android.widget.MediaController
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.github.poscat.liveslider.LiveSliderPagerAdapter
-import com.github.poscat.rss.viewer.Activity.NewsActivity
-import com.github.poscat.rss.viewer.DataType.Items
+import com.github.poscat.rss.viewer.activity.NewsActivity
+import com.github.poscat.rss.viewer.model.Items
 import com.github.poscat.rss.viewer.R
-import com.github.poscat.rss.viewer.Utility.ImageFilter
-import com.github.poscat.rss.viewer.Utility.TimeFormat
+import com.github.poscat.rss.viewer.utility.ImageFilter
+import com.github.poscat.rss.viewer.utility.TimeFormat
 import kotlinx.android.synthetic.main.page.view.*
 
 class NewsPageAdapter : LiveSliderPagerAdapter<Items>() {

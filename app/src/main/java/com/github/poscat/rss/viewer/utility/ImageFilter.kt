@@ -1,4 +1,4 @@
-package com.github.poscat.rss.viewer.Utility
+package com.github.poscat.rss.viewer.utility
 
 import android.graphics.Bitmap
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool

@@ -1,4 +1,4 @@
-package com.github.poscat.rss.viewer.DataType
+package com.github.poscat.rss.viewer.model
 
 import com.google.gson.annotations.SerializedName
 

@@ -1,4 +1,4 @@
-package com.github.poscat.rss.viewer.Activity
+package com.github.poscat.rss.viewer.activity
 
 import android.app.Activity
 import android.content.DialogInterface
@@ -21,12 +21,12 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
 import com.github.poscat.liveslider.LiveSliderAdapter
 import com.github.poscat.liveslider.LiveSliderFeed
-import com.github.poscat.rss.viewer.Adapter.NewsPageAdapter
-import com.github.poscat.rss.viewer.DataType.Channel
-import com.github.poscat.rss.viewer.DataType.Items
-import com.github.poscat.rss.viewer.DataType.News
+import com.github.poscat.rss.viewer.adapter.NewsPageAdapter
+import com.github.poscat.rss.viewer.model.Channel
+import com.github.poscat.rss.viewer.model.Items
+import com.github.poscat.rss.viewer.model.News
 import com.github.poscat.rss.viewer.R
-import com.github.poscat.rss.viewer.Utility.RetrofitAPI
+import com.github.poscat.rss.viewer.utility.RetrofitAPI
 import kotlinx.android.synthetic.main.feed.*
 import com.github.ybq.android.spinkit.style.Wave
 import com.google.gson.reflect.TypeToken

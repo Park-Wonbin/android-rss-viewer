@@ -12,7 +12,7 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
             android:usesCleartextTraffic="true">
-        <activity android:name="com.github.poscat.rss.viewer.Activity.FeedActivity">
+        <activity android:name="com.github.poscat.rss.viewer.activity.FeedActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -20,7 +20,7 @@
             </intent-filter>
         </activity>
         
-        <activity android:name="com.github.poscat.rss.viewer.Activity.NewsActivity"/>
+        <activity android:name="com.github.poscat.rss.viewer.activity.NewsActivity"/>
     </application>
 
 </manifest>
