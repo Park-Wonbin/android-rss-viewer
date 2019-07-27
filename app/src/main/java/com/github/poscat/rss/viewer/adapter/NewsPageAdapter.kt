@@ -1,9 +1,9 @@
 package com.github.poscat.rss.viewer.adapter
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.media.MediaPlayer
 import android.net.Uri
 import android.text.Spannable
 import android.text.SpannableString
@@ -25,12 +25,13 @@ import com.github.poscat.rss.viewer.utility.TimeFormat
 import kotlinx.android.synthetic.main.page.view.*
 
 class NewsPageAdapter : LiveSliderPagerAdapter<Items>() {
+    @SuppressLint("SetTextI18n")
     override fun createView(context: Context, container: ViewGroup, item: Items): View {
         val inflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val view = inflater.inflate(R.layout.page, container, false)
 
         // Set Author & Time
-        if (item.author == null) view.creator_time.text = TimeFormat.formatTimeString(item.published)
+        if (item.author == null || item.author!!.name == null) view.creator_time.text = TimeFormat.formatTimeString(item.published)
         else view.creator_time.text = item.author!!.name + "  ·  " + TimeFormat.formatTimeString(item.published)
 
         // Set Title

@@ -87,6 +87,7 @@ class FeedActivity : AppCompatActivity() {
                 if (dy > 0) fab.hide()
                 else fab.show()
             }
+
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
 
@@ -141,20 +142,23 @@ class FeedActivity : AppCompatActivity() {
             val size = rawData?.size ?: 0
             val data = Array(size) { LiveSliderFeed<Items>() }
 
-            if (rawData != null)
+            if (rawData != null) {
                 for ((idx, obj) in rawData.withIndex()) {
                     if (obj.title == null) {
                         data[idx].category = "Not yet updated"
                         continue
                     }
+                    obj.items!!.sortByDescending { it.published }
 
                     data[idx].category = obj.title!!
                     data[idx].items = obj.items
                 }
+            }
 
             mFeedAdapter!!.setData(data)
             mOriginalData = data
         }
+
         override fun onFailure(call:Call<String>, t:Throwable) {
             swipe_layout.visibility = View.VISIBLE
             swipe_layout.isRefreshing = false
