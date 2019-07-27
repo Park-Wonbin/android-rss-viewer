@@ -30,8 +30,8 @@ class NewsPageAdapter : LiveSliderPagerAdapter<Items>() {
         val view = inflater.inflate(R.layout.page, container, false)
 
         // Set Author & Time
-        if (item.author.name == null) view.creator_time.text = TimeFormat.formatTimeString(item.published)
-        else view.creator_time.text = item.author.name + "  ·  " + TimeFormat.formatTimeString(item.published)
+        if (item.author == null) view.creator_time.text = TimeFormat.formatTimeString(item.published)
+        else view.creator_time.text = item.author!!.name + "  ·  " + TimeFormat.formatTimeString(item.published)
 
         // Set Title
         view.title.text = item.title
@@ -51,6 +51,7 @@ class NewsPageAdapter : LiveSliderPagerAdapter<Items>() {
         if (item.enclosures != null) {
             if (item.enclosures!![0].type.contains("image")) {
                 view.video.visibility = View.INVISIBLE
+
                 // Set Image
                 if (item.enclosures != null)
                     Glide.with(context).load(item.enclosures!![0].url)
@@ -60,19 +61,18 @@ class NewsPageAdapter : LiveSliderPagerAdapter<Items>() {
                         .into(view.image)
             } else if (item.enclosures!![0].type.contains("video")) {
                 view.video.visibility = View.VISIBLE
+
                 // Set Video
                 val mediaController = MediaController(context)
                 mediaController.setAnchorView(view.video)
+
                 // Set video link
                 val video = Uri.parse(item.enclosures!![0].url)
+
                 // view.video.setMediaController(mediaController);
                 view.video.setMediaController(null)
                 view.video.setVideoURI(video)
-                view.video.setOnPreparedListener(object : MediaPlayer.OnPreparedListener {
-                    override fun onPrepared(mp: MediaPlayer) {
-                        mp.setVolume(0f, 0f)
-                    }
-                })
+                view.video.setOnPreparedListener { mp -> mp.setVolume(0f, 0f) }
                 view.video.requestFocus()
             }
         } else {
@@ -92,13 +92,13 @@ class NewsPageAdapter : LiveSliderPagerAdapter<Items>() {
     override fun startAnimation(context: Context, view: View) {
         view.image.startAnimation(AnimationUtils.loadAnimation(context, R.anim.zoom))
         view.description.startAnimation(AnimationUtils.loadAnimation(context, R.anim.show))
-        if (view.video != null) view.video.start()
+        view.video?.start()
     }
 
     override fun stopAnimation(context: Context, view: View) {
         view.description.clearAnimation()
         view.description.visibility = View.INVISIBLE
         view.image.clearAnimation()
-        if (view.video != null) view.video.pause()
+        view.video?.pause()
     }
 }
