@@ -27,30 +27,25 @@
 	</RelativeLayout>
 	
 	<LinearLayout
-		android:layout_width="wrap_content"
+		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
+		android:background="@drawable/shadow"
 		android:orientation="vertical"
-		android:layout_gravity="left|bottom" android:layout_margin="15dp">
+		android:layout_gravity="left|bottom">
 		
-		<LinearLayout
+		<TextView
+			android:id="@+id/creator_time"
+			android:text="Creator"
+			android:textSize="13dp"
+			android:textStyle="bold"
+			android:textColor="#fff"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:orientation="horizontal" android:layout_marginBottom="10dp">
-			
-			<TextView
-				android:id="@+id/creator_time"
-				android:text="Creator"
-				android:textSize="13dp"
-				android:textStyle="bold"
-				android:textColor="#fff"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:shadowColor="#000000"
-				android:shadowRadius="1.0"
-				android:shadowDx="1.0"
-				android:shadowDy="1.0"/>
-		
-		</LinearLayout>
+			android:shadowColor="#000000"
+			android:shadowRadius="1.0"
+			android:shadowDx="1.0"
+			android:shadowDy="1.0" android:layout_marginLeft="15dp" android:layout_marginRight="15dp"
+			android:layout_marginBottom="10dp" android:layout_marginTop="15dp"/>
 		
 		<TextView
 			android:id="@+id/title"
@@ -65,7 +60,8 @@
 			android:shadowDx="1.0"
 			android:shadowDy="1.0"
 			android:maxLines="2"
-			android:ellipsize="end"/>
+			android:ellipsize="end" android:layout_marginLeft="15dp" android:layout_marginRight="15dp"
+			android:layout_marginBottom="15dp"/>
 	</LinearLayout>
 
 	

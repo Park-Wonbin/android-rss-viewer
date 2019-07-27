@@ -57,6 +57,13 @@ class FeedActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.feed)
 
+        // Status Bar
+        val viewMain: View = getWindow().getDecorView()
+        if (viewMain != null) {
+            viewMain.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR)
+            getWindow().setStatusBarColor(Color.parseColor("#ffffff"))
+        }
+
         // SharedPreferences for the list of subscribed ---
         pref = getSharedPreferences("SUBSCRIBE", Activity.MODE_PRIVATE)
         editor = pref.edit()
@@ -91,7 +98,7 @@ class FeedActivity : AppCompatActivity() {
 
         // ProgressBar ---
         val wave = Wave()
-        wave.color = Color.parseColor("#26A69A")
+        wave.color = getColor(R.color.colorAccent)
         progressBar.indeterminateDrawable = wave
         progressBar.visibility = View.VISIBLE
         swipe_layout.visibility = View.GONE

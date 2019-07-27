@@ -30,6 +30,6 @@
 		android:layout_gravity="bottom|end"
 		android:layout_margin="25dp"
 		app:backgroundTint="@color/colorPrimary"
-		android:src="@drawable/ic_action_subscribe" />
+		android:src="@drawable/ic_action_subscribe_dark" />
 
 </FrameLayout>
