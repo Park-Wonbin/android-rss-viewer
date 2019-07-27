@@ -2,6 +2,10 @@
 
 [![Build Status](https://travis-ci.org/Park-Wonbin/android-rss-viewer.svg?branch=master)](https://travis-ci.org/Park-Wonbin/android-rss-viewer)
 
+<p align="center">
+  <img src="https://github.com/Park-Wonbin/android-rss-viewer/blob/master/screenshot/icon.png" width="15%" height="15%"/>
+</p>
+
 Android RSS Viewer refines meaningful elements of rss and provides real-time summary to users in slider form. It provides a wonderful UX to users for watching collection of subscribed news.
 
 We used our awesome android-live-slider library for developing our application.
