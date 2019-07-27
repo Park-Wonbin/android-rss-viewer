@@ -1,7 +1,6 @@
 package com.github.poscat.rss.viewer.activity
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View

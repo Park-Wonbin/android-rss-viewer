@@ -1,36 +1,33 @@
 package com.github.poscat.rss.viewer.activity
 
 import android.app.Activity
-import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
+import android.view.Menu
+import android.view.View
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.github.poscat.liveslider.LiveSliderAdapter
+import com.github.poscat.liveslider.LiveSliderFeed
+import com.github.poscat.rss.viewer.R
+import com.github.poscat.rss.viewer.adapter.NewsPageAdapter
+import com.github.poscat.rss.viewer.model.Channel
+import com.github.poscat.rss.viewer.model.Items
+import com.github.poscat.rss.viewer.model.News
+import com.github.poscat.rss.viewer.utility.RetrofitAPI
+import com.github.ybq.android.spinkit.style.Wave
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import kotlinx.android.synthetic.main.feed.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
-import androidx.core.view.MenuItemCompat
-import android.view.Menu
-import android.view.View
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.SearchView
-import com.github.poscat.liveslider.LiveSliderAdapter
-import com.github.poscat.liveslider.LiveSliderFeed
-import com.github.poscat.rss.viewer.adapter.NewsPageAdapter
-import com.github.poscat.rss.viewer.model.Channel
-import com.github.poscat.rss.viewer.model.Items
-import com.github.poscat.rss.viewer.model.News
-import com.github.poscat.rss.viewer.R
-import com.github.poscat.rss.viewer.utility.RetrofitAPI
-import kotlinx.android.synthetic.main.feed.*
-import com.github.ybq.android.spinkit.style.Wave
-import com.google.gson.reflect.TypeToken
-import kotlin.collections.ArrayList
 
 class FeedActivity : AppCompatActivity() {
 
