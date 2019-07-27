@@ -1,4 +1,4 @@
-package com.github.poscat.rss.viewer.Utility
+package com.github.poscat.rss.viewer.utility
 
 import java.text.SimpleDateFormat
 
@@ -17,23 +17,18 @@ object TimeFormat {
         var diffTime: Long = (curTime - regTime) / 1000
 
         if (diffTime < SEC) return "방금 전"
-
         diffTime /= SEC
 
         if (diffTime < MIN) return "" + diffTime + "분 전"
-
         diffTime /= MIN
 
         if (diffTime < HOUR) return "" + diffTime + "시간 전"
-
         diffTime /= HOUR
 
         if (diffTime < DAY) return "" + diffTime + "일 전"
-
         diffTime /= DAY
 
         if (diffTime < MONTH) return "" + diffTime + "달 전"
-
         diffTime /= MONTH
 
         return "" + diffTime + "년 전"

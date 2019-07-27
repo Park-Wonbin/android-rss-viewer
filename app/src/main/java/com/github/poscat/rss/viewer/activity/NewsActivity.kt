@@ -1,6 +1,6 @@
-package com.github.poscat.rss.viewer.Activity
+package com.github.poscat.rss.viewer.activity
 
-import android.content.Intent
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
@@ -15,23 +15,21 @@ class NewsActivity : AppCompatActivity() {
     private lateinit var mWebView: WebView
     private lateinit var mWebSettings: WebSettings
 
+    @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.news)
 
         // Status Bar
-        val viewMain: View = getWindow().getDecorView()
-        if (viewMain != null) {
-            viewMain.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR)
-            getWindow().setStatusBarColor(Color.parseColor("#ffffff"))
-        }
+        val viewMain: View = window.decorView
+        viewMain.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        window.statusBarColor = Color.parseColor("#ffffff")
 
         mWebView = findViewById(R.id.webView)
         mWebView.webViewClient = WebViewClient()
         mWebSettings = mWebView.settings
         mWebSettings.javaScriptEnabled = true
 
-        var intent: Intent = intent
         mWebView.loadUrl(intent.getStringExtra("news_url"))
     }
 }

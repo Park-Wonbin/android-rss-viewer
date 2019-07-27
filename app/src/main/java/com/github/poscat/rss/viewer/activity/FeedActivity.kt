@@ -1,36 +1,33 @@
-package com.github.poscat.rss.viewer.Activity
+package com.github.poscat.rss.viewer.activity
 
 import android.app.Activity
-import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
+import android.view.Menu
+import android.view.View
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.github.poscat.liveslider.LiveSliderAdapter
+import com.github.poscat.liveslider.LiveSliderFeed
+import com.github.poscat.rss.viewer.R
+import com.github.poscat.rss.viewer.adapter.NewsPageAdapter
+import com.github.poscat.rss.viewer.model.Channel
+import com.github.poscat.rss.viewer.model.Items
+import com.github.poscat.rss.viewer.model.News
+import com.github.poscat.rss.viewer.utility.RetrofitAPI
+import com.github.ybq.android.spinkit.style.Wave
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import kotlinx.android.synthetic.main.feed.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
-import androidx.core.view.MenuItemCompat
-import android.view.Menu
-import android.view.View
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.SearchView
-import com.github.poscat.liveslider.LiveSliderAdapter
-import com.github.poscat.liveslider.LiveSliderFeed
-import com.github.poscat.rss.viewer.Adapter.NewsPageAdapter
-import com.github.poscat.rss.viewer.DataType.Channel
-import com.github.poscat.rss.viewer.DataType.Items
-import com.github.poscat.rss.viewer.DataType.News
-import com.github.poscat.rss.viewer.R
-import com.github.poscat.rss.viewer.Utility.RetrofitAPI
-import kotlinx.android.synthetic.main.feed.*
-import com.github.ybq.android.spinkit.style.Wave
-import com.google.gson.reflect.TypeToken
-import kotlin.collections.ArrayList
 
 class FeedActivity : AppCompatActivity() {
 
@@ -58,15 +55,14 @@ class FeedActivity : AppCompatActivity() {
         setContentView(R.layout.feed)
 
         // Status Bar
-        val viewMain: View = getWindow().getDecorView()
-        if (viewMain != null) {
-            viewMain.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR)
-            getWindow().setStatusBarColor(Color.parseColor("#ffffff"))
-        }
+        val viewMain: View = window.decorView
+        viewMain.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        window.statusBarColor = Color.parseColor("#ffffff")
 
         // SharedPreferences for the list of subscribed ---
         pref = getSharedPreferences("SUBSCRIBE", Activity.MODE_PRIVATE)
         editor = pref.edit()
+
         mSubscribeChannelId = pref.getString("channelId", "")
         if (mSubscribeChannelId != "") {
             channelIdList = mSubscribeChannelId.toString().split("/") as MutableList<String>
@@ -88,6 +84,7 @@ class FeedActivity : AppCompatActivity() {
                 if (dy > 0) fab.hide()
                 else fab.show()
             }
+
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
 
@@ -125,8 +122,8 @@ class FeedActivity : AppCompatActivity() {
     }
 
     private fun getRSSData() {
-        if (mSubscribeChannelId != "") mCallNewsList = mRetrofitAPI.getNewsList(*channelIdList.toTypedArray())
-        else mCallNewsList = mRetrofitAPI.getNewsListAll() // default subscribe
+        mCallNewsList = if (mSubscribeChannelId != "") mRetrofitAPI.getNewsList(*channelIdList.toTypedArray())
+        else mRetrofitAPI.getNewsListAll() // default subscribe
         mCallNewsList.enqueue(mRetrofitCallback)
     }
 
@@ -142,19 +139,23 @@ class FeedActivity : AppCompatActivity() {
             val size = rawData?.size ?: 0
             val data = Array(size) { LiveSliderFeed<Items>() }
 
-            if (rawData != null)
+            if (rawData != null) {
                 for ((idx, obj) in rawData.withIndex()) {
                     if (obj.title == null) {
                         data[idx].category = "Not yet updated"
                         continue
                     }
-                    data[idx].category = obj.title
+                    obj.items!!.sortByDescending { it.published }
+
+                    data[idx].category = obj.title!!
                     data[idx].items = obj.items
                 }
+            }
 
             mFeedAdapter!!.setData(data)
             mOriginalData = data
         }
+
         override fun onFailure(call:Call<String>, t:Throwable) {
             swipe_layout.visibility = View.VISIBLE
             swipe_layout.isRefreshing = false
@@ -170,18 +171,18 @@ class FeedActivity : AppCompatActivity() {
             val listType = object : TypeToken<Array<Channel>>() {}.type
             val rawData = mGson.fromJson<Array<Channel>>(result, listType)
 
-            var mUserItems: ArrayList<Int> = ArrayList()
-            var listItems = Array<String>(rawData.size) { "" }
-            var listItemsId = Array<String>(rawData.size) { "" }
-            var checkedItems = BooleanArray(rawData!!.size)
+            val mUserItems: ArrayList<Int> = ArrayList()
+            val listItems = Array(rawData.size) { "" }
+            val listItemsId = Array(rawData.size) { "" }
+            val checkedItems = BooleanArray(rawData!!.size)
 
             for ((idx, obj) in rawData.withIndex()) {
-                if (obj.title == null) listItems!![idx] = "Not yet updated"
-                else listItems!![idx] = obj.title
-                listItemsId!![idx] = obj.id
+                listItems[idx] = obj.title ?: "Not yet updated"
+
+                listItemsId[idx] = obj.id
                 for (i in channelIdList) {
                     if (i == obj.id) {
-                        checkedItems!![idx] = true
+                        checkedItems[idx] = true
                         mUserItems.add(idx)
                     }
                 }
@@ -192,7 +193,7 @@ class FeedActivity : AppCompatActivity() {
             mBuilder.setTitle("보고싶은 채널을 구독해주세요.")
             mBuilder.setMultiChoiceItems(
                 listItems, checkedItems
-            ) { dialogInterface, position, isChecked ->
+            ) { _, position, isChecked ->
                 if (isChecked) {
                     if (!mUserItems.contains(position)) {
                         mUserItems.add(position)
@@ -201,34 +202,32 @@ class FeedActivity : AppCompatActivity() {
                     mUserItems.remove(position)
                 }
             }
-            mBuilder.setCancelable(false)
-            mBuilder.setPositiveButton("완료", object: DialogInterface.OnClickListener {
-                override fun onClick(dialogInterface:DialogInterface, which:Int) {
-                    var item = ""
-                    channelIdList = mutableListOf<String>()
-                    for (i in 0 until mUserItems.size) {
-                        channelIdList.add(listItemsId!![mUserItems.get(i)])
-                        item = item + listItemsId!![mUserItems.get(i)]
-                        if (i != mUserItems.size - 1) item = item + "/"
-                    }
-                    mSubscribeChannelId = item
-                    editor.putString("channelId", mSubscribeChannelId)
-                    editor.commit()
 
-                    progressBar.visibility = View.VISIBLE
-                    getRSSData()
+            mBuilder.setCancelable(false)
+            mBuilder.setPositiveButton("완료") { _, _ ->
+                var item = ""
+                channelIdList = mutableListOf()
+                for (i in 0 until mUserItems.size) {
+                    channelIdList.add(listItemsId[mUserItems[i]])
+                    item += listItemsId[mUserItems[i]]
+
+                    if (i != mUserItems.size - 1) item += "/"
                 }
-            })
-            mBuilder.setNegativeButton("취소", object:DialogInterface.OnClickListener {
-                override fun onClick(dialogInterface:DialogInterface, i:Int) {
-                    dialogInterface.dismiss()
-                }
-            })
+                mSubscribeChannelId = item
+                editor.putString("channelId", mSubscribeChannelId)
+                editor.commit()
+
+                progressBar.visibility = View.VISIBLE
+                getRSSData()
+            }
+
+            mBuilder.setNegativeButton("취소") { dialogInterface, _ -> dialogInterface.dismiss() }
 
             val mDialog = mBuilder.create()
             mDialog.show()
         }
-        override fun onFailure(call:Call<String>, t:Throwable) {
+
+        override fun onFailure(call: Call<String>, t: Throwable) {
             t.printStackTrace()
         }
     }
@@ -237,7 +236,7 @@ class FeedActivity : AppCompatActivity() {
         val inflater = menuInflater
         inflater.inflate(R.menu.menu, menu)
         val searchViewItem = menu.findItem(R.id.action_search)
-        val searchViewAndroidActionBar = MenuItemCompat.getActionView(searchViewItem) as SearchView
+        val searchViewAndroidActionBar = searchViewItem.actionView as SearchView
         searchViewAndroidActionBar.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 searchViewAndroidActionBar.clearFocus()
@@ -262,19 +261,21 @@ class FeedActivity : AppCompatActivity() {
             for (i in mOriginalData!!.iterator()) {
                 val newItem = LiveSliderFeed<Items>()
                 newItem.category = i.category
-                newItem.items = ArrayList<Items>()
+                newItem.items = ArrayList()
+
                 if (i.items != null)
                     for (j in i.items!!.iterator()) {
                         // Check if the title or description contain the 'word'.
-                        if (j.title.toLowerCase().contains(word) || j.description.toLowerCase().contains(word)) {
+                        if(j.title != null && j.title!!.toLowerCase().contains(word))
                             newItem.items!!.add(j)
-                        }
+                        else if(j.description.toLowerCase().contains(word))
+                            newItem.items!!.add(j)
                     }
+
                 newData.add(newItem)
             }
 
         val array = Array(newData.size) { LiveSliderFeed<Items>() }
-
         mFeedAdapter!!.setData(newData.toArray(array))
     }
 }

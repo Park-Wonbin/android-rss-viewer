@@ -1,4 +1,4 @@
-package com.github.poscat.rss.viewer.Utility
+package com.github.poscat.rss.viewer.utility
 
 import android.graphics.Bitmap
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool
@@ -9,7 +9,7 @@ import java.nio.charset.Charset
 import java.security.MessageDigest
 
 class ImageFilter : BitmapTransformation() {
-    private val ID = "com.github.poscat.rss.viewer.Utility.ImageFilter"
+    private val ID = "com.github.poscat.rss.viewer.utility.ImageFilter"
     private val ID_BYTES = ID.toByteArray(Charset.forName("UTF-8"))
 
     public override fun transform(pool: BitmapPool, toTransform: Bitmap, outWidth: Int, outHeight: Int): Bitmap {
@@ -27,8 +27,8 @@ class ImageFilter : BitmapTransformation() {
         return myFilter.processFilter(toTransform)
     }
 
-    override fun equals(o: Any?): Boolean {
-        return o is ImageFilter
+    override fun equals(other: Any?): Boolean {
+        return other is ImageFilter
     }
 
     override fun hashCode(): Int {
