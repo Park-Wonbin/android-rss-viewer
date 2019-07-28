@@ -38,7 +38,6 @@ class FeedActivity : AppCompatActivity() {
     private lateinit var mGson: Gson
 
     // for RecyclerView
-    private var mRecyclerView: RecyclerView? = null
     private var mFeedAdapter: LiveSliderAdapter<Items>? = null
 
     // for Searching
@@ -47,37 +46,44 @@ class FeedActivity : AppCompatActivity() {
     // for Subscribe
     private var mSubscribeChannelId: String? = null
     private lateinit var pref: SharedPreferences
-    private lateinit var editor: SharedPreferences.Editor
     private var channelIdList = mutableListOf<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.feed)
-
-        // Status Bar
-        val viewMain: View = window.decorView
-        viewMain.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-        window.statusBarColor = Color.parseColor("#ffffff")
-
-        // SharedPreferences for the list of subscribed ---
         pref = getSharedPreferences("SUBSCRIBE", Activity.MODE_PRIVATE)
-        editor = pref.edit()
 
-        mSubscribeChannelId = pref.getString("channelId", "")
-        if (mSubscribeChannelId != "") {
-            channelIdList = mSubscribeChannelId.toString().split("/") as MutableList<String>
-        }
+        statusBarSetting()
+        recyclerViewSetting()
+        progressBarSetting()
+        uiSetting()
 
-        // RecyclerView Adapter ---
-        val layoutManager = LinearLayoutManager(applicationContext, RecyclerView.VERTICAL, false)
-        mRecyclerView = findViewById(R.id.recycler_view)
-        mRecyclerView!!.itemAnimator = null // Blink animation cancel(when data changed)
+        retrofitBuilder()
+        updateSubscribeList()
+        getRSSData()
+    }
+
+    private fun getRSSData() {
+        mCallNewsList = if (channelIdList.size > 0) mRetrofitAPI.getNewsList(*channelIdList.toTypedArray())
+        else mRetrofitAPI.getNewsListAll()
+
+        mCallNewsList.enqueue(mRetrofitCallback)
+    }
+
+    private fun statusBarSetting() {
+        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        window.statusBarColor = Color.parseColor("#ffffff")
+    }
+
+    private fun recyclerViewSetting() {
         mFeedAdapter = LiveSliderAdapter(NewsPageAdapter(), true)
         mFeedAdapter!!.setHasStableIds(true)
-        mRecyclerView!!.layoutManager = layoutManager
-        mRecyclerView!!.setHasFixedSize(true)
-        mRecyclerView!!.adapter = mFeedAdapter
-        mRecyclerView!!.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+
+        recycler_view.itemAnimator = null // Blink animation cancel(when data changed)
+        recycler_view.layoutManager = LinearLayoutManager(applicationContext, RecyclerView.VERTICAL, false)
+        recycler_view.setHasFixedSize(true)
+        recycler_view.adapter = mFeedAdapter
+        recycler_view.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 
@@ -92,23 +98,26 @@ class FeedActivity : AppCompatActivity() {
                     mFeedAdapter!!.startAnimation((recyclerView.layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition())
             }
         })
+    }
 
-        // ProgressBar ---
+    private fun progressBarSetting() {
         val wave = Wave()
         wave.color = getColor(R.color.colorAccent)
+
         progressBar.indeterminateDrawable = wave
         progressBar.visibility = View.VISIBLE
         swipe_layout.visibility = View.GONE
+    }
 
-        // Retrofit ---
-        mGson = Gson()
-        mRetrofit = Retrofit.Builder().baseUrl("https://rss-search-api.herokuapp.com").addConverterFactory(ScalarsConverterFactory.create()).build()
-        mRetrofitAPI = mRetrofit.create(RetrofitAPI::class.java)
+    private fun updateSubscribeList() {
+        mSubscribeChannelId = pref.getString("channelId", "")
+        if (mSubscribeChannelId != "") {
+            channelIdList = mSubscribeChannelId.toString().split("/") as MutableList<String>
+        }
+    }
 
-        /**
-         * Get News RSS Data
-         */
-        getRSSData()
+    private fun uiSetting() {
+        // Refresher
         swipe_layout.setOnRefreshListener {
             getRSSData()
         }
@@ -121,10 +130,37 @@ class FeedActivity : AppCompatActivity() {
         }
     }
 
-    private fun getRSSData() {
-        mCallNewsList = if (mSubscribeChannelId != "") mRetrofitAPI.getNewsList(*channelIdList.toTypedArray())
-        else mRetrofitAPI.getNewsListAll() // default subscribe
-        mCallNewsList.enqueue(mRetrofitCallback)
+    private fun retrofitBuilder() {
+        mGson = Gson()
+        mRetrofit = Retrofit.Builder().baseUrl("https://rss-search-api.herokuapp.com").
+            addConverterFactory(ScalarsConverterFactory.create()).build()
+        mRetrofitAPI = mRetrofit.create(RetrofitAPI::class.java)
+    }
+
+    private fun searchFilter(str: String) {
+        val word = str.toLowerCase()
+        val newData = ArrayList<LiveSliderFeed<Items>>()
+
+        if (mOriginalData != null)
+            for (i in mOriginalData!!.iterator()) {
+                val newItem = LiveSliderFeed<Items>()
+                newItem.category = i.category
+                newItem.items = ArrayList()
+
+                if (i.items != null)
+                    for (j in i.items!!.iterator()) {
+                        // Check if the title or description contain the 'word'.
+                        if(j.title != null && j.title!!.toLowerCase().contains(word))
+                            newItem.items!!.add(j)
+                        else if(j.description.toLowerCase().contains(word))
+                            newItem.items!!.add(j)
+                    }
+
+                newData.add(newItem)
+            }
+
+        val array = Array(newData.size) { LiveSliderFeed<Items>() }
+        mFeedAdapter!!.setData(newData.toArray(array))
     }
 
     private val mRetrofitCallback = object: Callback<String> {
@@ -166,7 +202,7 @@ class FeedActivity : AppCompatActivity() {
     }
 
     private val mChannelCallback = object: Callback<String> {
-        override fun onResponse(call:Call<String>, response: Response<String>) {
+        override fun onResponse(call: Call<String>, response: Response<String>) {
             val result = response.body()
             val listType = object : TypeToken<Array<Channel>>() {}.type
             val rawData = mGson.fromJson<Array<Channel>>(result, listType)
@@ -206,6 +242,8 @@ class FeedActivity : AppCompatActivity() {
             mBuilder.setCancelable(false)
             mBuilder.setPositiveButton("완료") { _, _ ->
                 var item = ""
+                val editor = pref.edit()
+
                 channelIdList = mutableListOf()
                 for (i in 0 until mUserItems.size) {
                     channelIdList.add(listItemsId[mUserItems[i]])
@@ -213,9 +251,10 @@ class FeedActivity : AppCompatActivity() {
 
                     if (i != mUserItems.size - 1) item += "/"
                 }
-                mSubscribeChannelId = item
-                editor.putString("channelId", mSubscribeChannelId)
+
+                editor.putString("channelId", item)
                 editor.commit()
+                updateSubscribeList()
 
                 progressBar.visibility = View.VISIBLE
                 getRSSData()
@@ -251,31 +290,5 @@ class FeedActivity : AppCompatActivity() {
             }
         })
         return super.onCreateOptionsMenu(menu)
-    }
-
-    private fun searchFilter(str: String) {
-        val word = str.toLowerCase()
-        val newData = ArrayList<LiveSliderFeed<Items>>()
-
-        if (mOriginalData != null)
-            for (i in mOriginalData!!.iterator()) {
-                val newItem = LiveSliderFeed<Items>()
-                newItem.category = i.category
-                newItem.items = ArrayList()
-
-                if (i.items != null)
-                    for (j in i.items!!.iterator()) {
-                        // Check if the title or description contain the 'word'.
-                        if(j.title != null && j.title!!.toLowerCase().contains(word))
-                            newItem.items!!.add(j)
-                        else if(j.description.toLowerCase().contains(word))
-                            newItem.items!!.add(j)
-                    }
-
-                newData.add(newItem)
-            }
-
-        val array = Array(newData.size) { LiveSliderFeed<Items>() }
-        mFeedAdapter!!.setData(newData.toArray(array))
     }
 }
