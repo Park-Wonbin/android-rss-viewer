@@ -38,7 +38,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 
 class FeedActivity : AppCompatActivity() {
-
     // for Parsing
     private lateinit var mRetrofitAPI: RetrofitAPI
     private lateinit var mCallNewsList: Call<String>
@@ -52,44 +51,12 @@ class FeedActivity : AppCompatActivity() {
     private lateinit var pref: SharedPreferences
     private var mChannelList = arrayOf<Channel>()
     private var mSubscribedChannelList = mutableListOf<String>()
-    private val disposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.feed)
         pref = getSharedPreferences("SUBSCRIBE", Activity.MODE_PRIVATE)
 
-        val provider = Retrofit.Builder().baseUrl("https://rss-search-api.herokuapp.com")
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.createAsync())
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(RetrofitAPI::class.java)
-
-        val observe1 = provider.getChannels()
-            .subscribeOn(Schedulers.newThread())
-            .observeOn(AndroidSchedulers.mainThread())
-
-        val observe2 = provider.getChannelsWithItems()
-            .subscribeOn(Schedulers.newThread())
-            .observeOn(AndroidSchedulers.mainThread())
-
-        val combined = Observable.zip(observe1, observe2,
-            BiFunction<List<Channel>, List<Channel>, Zipper>{
-                channels, items -> createZipper(channels, items)
-            })
-
-        progressBarSetting()
-        disposable.add(combined
-            .subscribe{
-                swipe_layout.visibility = View.VISIBLE
-                swipe_layout.isRefreshing = false
-                progressBar.visibility = View.GONE
-
-                Log.d("retrofit", "size1 : " + it.channels.size)
-                Log.d("retrofit", "size2 : " + it.items.size)
-            })
-
-        /*
         statusBarSetting()
         recyclerViewSetting()
         progressBarSetting()
@@ -98,7 +65,6 @@ class FeedActivity : AppCompatActivity() {
         retrofitBuilder()
         updateSubscribeList()
         getRSSData()
-        */
     }
 
     private fun createZipper(channels: List<Channel>, items: List<Channel>): Zipper {
@@ -106,9 +72,42 @@ class FeedActivity : AppCompatActivity() {
     }
 
     private fun getRSSData() {
-        mCallNewsList = if (mSubscribedChannelList.size > 0) mRetrofitAPI.getNewsList(*mSubscribedChannelList.toTypedArray())
-        else mRetrofitAPI.getNewsListAll()
-        mCallNewsList.enqueue(mRetrofitCallback)
+        val disposable = CompositeDisposable()
+
+        val observe1 = mRetrofitAPI.getChannels()
+            .subscribeOn(Schedulers.newThread())
+            .observeOn(AndroidSchedulers.mainThread())
+
+        val observe2 = mRetrofitAPI.getChannelsWithItems()
+            .subscribeOn(Schedulers.newThread())
+            .observeOn(AndroidSchedulers.mainThread())
+
+        val combined = Observable.zip(observe1, observe2,
+            BiFunction<List<Channel>, List<Channel>, Zipper>{
+                    channels, items -> createZipper(channels, items)
+            })
+
+        disposable.add(combined
+            .subscribe{
+                val data = Array(it.items.size) { LiveSliderFeed<Item>() }
+                mChannelList = it.items.toTypedArray()
+
+                for ((idx, obj) in mChannelList.withIndex()) {
+                    if (obj.title == null) {
+                        data[idx].category = getString(R.string.empty_content)
+                        continue
+                    }
+
+                    obj.items?.sortByDescending { it.published }
+                    data[idx].category = obj.title!!
+                    data[idx].items = obj.items
+                }
+
+                mFeedAdapter!!.setData(data)
+                swipe_layout.visibility = View.VISIBLE
+                swipe_layout.isRefreshing = false
+                progressBar.visibility = View.GONE
+            })
     }
 
     private fun statusBarSetting() {
@@ -226,9 +225,11 @@ class FeedActivity : AppCompatActivity() {
     }
 
     private fun retrofitBuilder() {
-        val retrofit = Retrofit.Builder().baseUrl("https://rss-search-api.herokuapp.com").
-            addConverterFactory(GsonConverterFactory.create()).build()
-        mRetrofitAPI = retrofit.create(RetrofitAPI::class.java)
+        mRetrofitAPI = Retrofit.Builder().baseUrl("https://rss-search-api.herokuapp.com")
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.createAsync())
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(RetrofitAPI::class.java)
         mGson = Gson()
     }
 
@@ -257,55 +258,6 @@ class FeedActivity : AppCompatActivity() {
 
         val array = Array(newData.size) { LiveSliderFeed<Item>() }
         mFeedAdapter!!.setData(newData.toArray(array))
-    }
-
-    private val mRetrofitCallback = object: Callback<String> {
-        override fun onResponse(call: Call<String>, response: Response<String>) {
-            val result = response.body()
-            val listType = object : TypeToken<Array<Channel>>() {}.type
-            mChannelList = mGson.fromJson(result, listType)
-
-            val data = Array(mChannelList.size) { LiveSliderFeed<Item>() }
-
-            if (mChannelList.isNotEmpty()) {
-                for ((idx, obj) in mChannelList.withIndex()) {
-                    if (obj.title == null) {
-                        data[idx].category = getString(R.string.empty_content)
-                        continue
-                    }
-
-                    obj.items?.sortByDescending { it.published }
-                    data[idx].category = obj.title!!
-                    data[idx].items = obj.items
-                }
-            }
-
-            mFeedAdapter!!.setData(data)
-
-            swipe_layout.visibility = View.VISIBLE
-            swipe_layout.isRefreshing = false
-            progressBar.visibility = View.GONE
-        }
-
-        override fun onFailure(call:Call<String>, t:Throwable) {
-            swipe_layout.visibility = View.VISIBLE
-            swipe_layout.isRefreshing = false
-            progressBar.visibility = View.GONE
-
-            t.printStackTrace()
-        }
-    }
-
-    private val mChannelCallback = object: Callback<String> {
-        override fun onResponse(call: Call<String>, response: Response<String>) {
-            val result = response.body()
-            val listType = object : TypeToken<Array<Channel>>() {}.type
-            mChannelList = mGson.fromJson(result, listType)
-        }
-
-        override fun onFailure(call: Call<String>, t: Throwable) {
-            t.printStackTrace()
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
