@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.NO_POSITION
 import com.github.poscat.liveslider.LiveSliderAdapter
 import com.github.poscat.liveslider.LiveSliderFeed
 import com.github.poscat.rss.viewer.R
@@ -121,9 +122,26 @@ class FeedActivity : AppCompatActivity() {
 
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
+                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                var animationItemPosition = layoutManager.findFirstCompletelyVisibleItemPosition()
 
-                if (newState == RecyclerView.SCROLL_STATE_IDLE)
-                    mFeedAdapter!!.startAnimation((recyclerView.layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition())
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    if (animationItemPosition == NO_POSITION) {
+                        val firstItemPosition = layoutManager.findFirstVisibleItemPosition()
+                        val lastItemPosition = layoutManager.findLastVisibleItemPosition()
+                        val firstView = layoutManager.findViewByPosition(firstItemPosition)
+                        val lastView = layoutManager.findViewByPosition(lastItemPosition)
+
+                        animationItemPosition = when {
+                            firstItemPosition == NO_POSITION -> lastItemPosition
+                            lastItemPosition == NO_POSITION -> firstItemPosition
+                            (firstView!!.bottom - recycler_view.top) >= (recycler_view.bottom - lastView!!.top) -> firstItemPosition
+                            else -> lastItemPosition
+                        }
+                    }
+
+                    mFeedAdapter!!.startAnimation(animationItemPosition)
+                }
             }
         })
     }
