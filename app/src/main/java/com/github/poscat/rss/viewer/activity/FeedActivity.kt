@@ -30,7 +30,6 @@ class FeedActivity : AppCompatActivity() {
     private var mFeedAdapter: LiveSliderAdapter<Item>? = null
 
     // for Subscribe
-    private var mSubscribeChannelId: String? = null
     private lateinit var pref: SharedPreferences
     private var mChannelList = arrayOf<Channel>()
     private var mSubscribeList = arrayOf<Channel>()
@@ -50,14 +49,33 @@ class FeedActivity : AppCompatActivity() {
         getRSSData()
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.menu, menu)
+        val searchViewItem = menu.findItem(R.id.action_search)
+        val searchViewAndroidActionBar = searchViewItem.actionView as SearchView
+        searchViewAndroidActionBar.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                searchViewAndroidActionBar.clearFocus()
+                searchFilter(query)
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                searchFilter(newText)
+
+                return false
+            }
+        })
+        return super.onCreateOptionsMenu(menu)
+    }
+
     private fun getRSSData() {
         val disposable = CompositeDisposable()
         val request = if (mSubscribedChannelList.isEmpty()) mAPIClient.getChannelsAPI()
         else mAPIClient.getSelectedChannelsAPI(mSubscribedChannelList.toTypedArray())
 
-        disposable.add(
-            request
-            .subscribe{
+        disposable.add(request.subscribe {
                 val data = Array(it.items.size) { LiveSliderFeed<Item>() }
                 mChannelList = it.items.toTypedArray()
                 mSubscribeList = it.channels.toTypedArray()
@@ -119,10 +137,23 @@ class FeedActivity : AppCompatActivity() {
         swipe_layout.visibility = View.GONE
     }
 
+    private fun uiSetting() {
+        // Refresher
+        swipe_layout.setOnRefreshListener {
+            getRSSData()
+        }
+
+        // Subscribe Button
+        fab.setOnClickListener {
+            val mDialog = createChannelListSelector().create()
+            mDialog.show()
+        }
+    }
+
     private fun updateSubscribeList() {
-        mSubscribeChannelId = pref.getString("channelId", "")
-        if (mSubscribeChannelId != "") {
-            mSubscribedChannelList = mSubscribeChannelId.toString().split("/") as MutableList<String>
+        val subscribedChannelIDs = pref.getString("channelId", "")
+        if (subscribedChannelIDs != null && subscribedChannelIDs != "") {
+            mSubscribedChannelList = subscribedChannelIDs.toString().split("/") as MutableList<String>
         }
     }
 
@@ -168,7 +199,7 @@ class FeedActivity : AppCompatActivity() {
             }
 
             editor.putString("channelId", item)
-            editor.commit()
+            editor.apply()
             updateSubscribeList()
 
             progressBar.visibility = View.VISIBLE
@@ -177,19 +208,6 @@ class FeedActivity : AppCompatActivity() {
 
         builder.setNegativeButton("취소") { dialogInterface, _ -> dialogInterface.dismiss() }
         return builder
-    }
-
-    private fun uiSetting() {
-        // Refresher
-        swipe_layout.setOnRefreshListener {
-            getRSSData()
-        }
-
-        // Subscribe Button
-        fab.setOnClickListener {
-            val mDialog = createChannelListSelector().create()
-            mDialog.show()
-        }
     }
 
     private fun searchFilter(str: String) {
@@ -216,26 +234,5 @@ class FeedActivity : AppCompatActivity() {
 
         val array = Array(newData.size) { LiveSliderFeed<Item>() }
         mFeedAdapter!!.setData(newData.toArray(array))
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        val inflater = menuInflater
-        inflater.inflate(R.menu.menu, menu)
-        val searchViewItem = menu.findItem(R.id.action_search)
-        val searchViewAndroidActionBar = searchViewItem.actionView as SearchView
-        searchViewAndroidActionBar.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String): Boolean {
-                searchViewAndroidActionBar.clearFocus()
-                searchFilter(query)
-                return true
-            }
-
-            override fun onQueryTextChange(newText: String): Boolean {
-                searchFilter(newText)
-
-                return false
-            }
-        })
-        return super.onCreateOptionsMenu(menu)
     }
 }
