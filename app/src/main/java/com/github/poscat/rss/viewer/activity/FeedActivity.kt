@@ -18,6 +18,7 @@ import com.github.poscat.rss.viewer.R
 import com.github.poscat.rss.viewer.adapter.NewsPageAdapter
 import com.github.poscat.rss.viewer.model.Channel
 import com.github.poscat.rss.viewer.model.Item
+import com.github.poscat.rss.viewer.model.Zipper
 import com.github.poscat.rss.viewer.utility.RetrofitAPI
 import com.github.ybq.android.spinkit.style.Wave
 import com.google.gson.Gson
@@ -25,6 +26,8 @@ import com.google.gson.reflect.TypeToken
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.functions.BiFunction
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.feed.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -62,25 +65,28 @@ class FeedActivity : AppCompatActivity() {
             .build()
             .create(RetrofitAPI::class.java)
 
-        val observe = provider.getChannels()
-            .flatMap {
-                Observable.just(it)
-            }.observeOn(AndroidSchedulers.mainThread())
-            .doOnSubscribe{}
-            .doOnTerminate{}
+        val observe1 = provider.getChannels()
+            .subscribeOn(Schedulers.newThread())
+            .observeOn(AndroidSchedulers.mainThread())
+
+        val observe2 = provider.getChannelsWithItems()
+            .subscribeOn(Schedulers.newThread())
+            .observeOn(AndroidSchedulers.mainThread())
+
+        val combined = Observable.zip(observe1, observe2,
+            BiFunction<List<Channel>, List<Channel>, Zipper>{
+                channels, items -> createZipper(channels, items)
+            })
 
         progressBarSetting()
-        disposable.add(provider.getChannels()
-            .flatMap {
-                Observable.just(it)
-            }.observeOn(AndroidSchedulers.mainThread())
-            .doOnSubscribe{}
-            .doOnTerminate{}
+        disposable.add(combined
             .subscribe{
                 swipe_layout.visibility = View.VISIBLE
                 swipe_layout.isRefreshing = false
                 progressBar.visibility = View.GONE
-                Log.d("retrofit", it.size.toString())
+
+                Log.d("retrofit", "size1 : " + it.channels.size)
+                Log.d("retrofit", "size2 : " + it.items.size)
             })
 
         /*
@@ -93,6 +99,10 @@ class FeedActivity : AppCompatActivity() {
         updateSubscribeList()
         getRSSData()
         */
+    }
+
+    private fun createZipper(channels: List<Channel>, items: List<Channel>): Zipper {
+        return Zipper(channels, items)
     }
 
     private fun getRSSData() {
