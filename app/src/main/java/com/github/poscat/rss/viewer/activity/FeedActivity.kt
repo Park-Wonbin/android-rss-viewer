@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.View
 import androidx.appcompat.app.AlertDialog
@@ -19,29 +18,14 @@ import com.github.poscat.rss.viewer.adapter.NewsPageAdapter
 import com.github.poscat.rss.viewer.model.Channel
 import com.github.poscat.rss.viewer.model.Item
 import com.github.poscat.rss.viewer.model.Zipper
-import com.github.poscat.rss.viewer.utility.RetrofitAPI
+import com.github.poscat.rss.viewer.utility.APIClient
 import com.github.ybq.android.spinkit.style.Wave
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.functions.BiFunction
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.feed.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
-import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.converter.scalars.ScalarsConverterFactory
 
 class FeedActivity : AppCompatActivity() {
     // for Parsing
-    private lateinit var mRetrofitAPI: RetrofitAPI
-    private lateinit var mCallNewsList: Call<String>
-    private lateinit var mGson: Gson
+    private val mAPIClient = APIClient()
 
     // for RecyclerView
     private var mFeedAdapter: LiveSliderAdapter<Item>? = null
@@ -50,6 +34,7 @@ class FeedActivity : AppCompatActivity() {
     private var mSubscribeChannelId: String? = null
     private lateinit var pref: SharedPreferences
     private var mChannelList = arrayOf<Channel>()
+    private var mSubscribeList = arrayOf<Channel>()
     private var mSubscribedChannelList = mutableListOf<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,7 +47,6 @@ class FeedActivity : AppCompatActivity() {
         progressBarSetting()
         uiSetting()
 
-        retrofitBuilder()
         updateSubscribeList()
         getRSSData()
     }
@@ -73,24 +57,15 @@ class FeedActivity : AppCompatActivity() {
 
     private fun getRSSData() {
         val disposable = CompositeDisposable()
+        val request = if (mSubscribedChannelList.isEmpty()) mAPIClient.getChannelsAPI()
+        else mAPIClient.getSelectedChannelsAPI(mSubscribedChannelList.toTypedArray())
 
-        val observe1 = mRetrofitAPI.getChannels()
-            .subscribeOn(Schedulers.newThread())
-            .observeOn(AndroidSchedulers.mainThread())
-
-        val observe2 = mRetrofitAPI.getChannelsWithItems()
-            .subscribeOn(Schedulers.newThread())
-            .observeOn(AndroidSchedulers.mainThread())
-
-        val combined = Observable.zip(observe1, observe2,
-            BiFunction<List<Channel>, List<Channel>, Zipper>{
-                    channels, items -> createZipper(channels, items)
-            })
-
-        disposable.add(combined
+        disposable.add(
+            request
             .subscribe{
                 val data = Array(it.items.size) { LiveSliderFeed<Item>() }
                 mChannelList = it.items.toTypedArray()
+                mSubscribeList = it.channels.toTypedArray()
 
                 for ((idx, obj) in mChannelList.withIndex()) {
                     if (obj.title == null) {
@@ -159,11 +134,11 @@ class FeedActivity : AppCompatActivity() {
     private fun createChannelListSelector() : AlertDialog.Builder {
         val mBuilder = AlertDialog.Builder(this@FeedActivity)
         val mUserItems: ArrayList<Int> = ArrayList()
-        val listItems = Array(mChannelList.size) { "" }
-        val listItemsId = Array(mChannelList.size) { "" }
-        val checkedItems = BooleanArray(mChannelList.size)
+        val listItems = Array(mSubscribeList.size) { "" }
+        val listItemsId = Array(mSubscribeList.size) { "" }
+        val checkedItems = BooleanArray(mSubscribeList.size)
 
-        for ((idx, obj) in mChannelList.withIndex()) {
+        for ((idx, obj) in mSubscribeList.withIndex()) {
             listItems[idx] = obj.title ?: getString(R.string.empty_content)
             listItemsId[idx] = obj.id
 
@@ -222,15 +197,6 @@ class FeedActivity : AppCompatActivity() {
             val mDialog = createChannelListSelector().create()
             mDialog.show()
         }
-    }
-
-    private fun retrofitBuilder() {
-        mRetrofitAPI = Retrofit.Builder().baseUrl("https://rss-search-api.herokuapp.com")
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.createAsync())
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(RetrofitAPI::class.java)
-        mGson = Gson()
     }
 
     private fun searchFilter(str: String) {
