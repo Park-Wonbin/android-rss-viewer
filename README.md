@@ -9,8 +9,7 @@
 
 Android RSS Viewer refines meaningful elements of rss and provides real-time summary to users in slider form. It provides a wonderful UX to users for watching collection of subscribed news.
 
-We used our awesome android-live-slider library for developing our application.
-- [`Android-Live-Slider`](https://github.com/shhj1998/android-live-slider)
+We used our awesome [`Android-Live-Slider`](https://github.com/shhj1998/android-live-slider) library for developing our application.
 
 
 Requirements
@@ -49,7 +48,7 @@ Screenshots
 </p>
 
 
-> We also supports RSS containing the video.
+> We also supports RSS that contains video.
 
 <p align="center">
     <img src="https://github.com/Park-Wonbin/android-rss-viewer/blob/master/screenshot/new-rss-viewer-5.gif" width="30%"/>
