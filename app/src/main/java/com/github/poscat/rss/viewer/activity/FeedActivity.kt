@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.Menu
 import android.view.View
 import android.widget.Toast
@@ -182,7 +183,7 @@ class FeedActivity : AppCompatActivity() {
     }
 
     private fun createChannelListSelector() : AlertDialog.Builder {
-        val builder = AlertDialog.Builder(this@FeedActivity)
+        val builder = AlertDialog.Builder(this)
         val selectedChannels: ArrayList<Int> = ArrayList()
         val channelTitles = Array(mSubscribeList.size) { "" }
         val subscribedChannels = BooleanArray(mSubscribeList.size)
@@ -199,6 +200,8 @@ class FeedActivity : AppCompatActivity() {
         }
 
         builder.setTitle("보고싶은 채널을 구독해주세요.")
+        builder.setCancelable(false)
+
         builder.setMultiChoiceItems(channelTitles, subscribedChannels) { _, position, isChecked ->
             if (isChecked) {
                 if (!selectedChannels.contains(position)) {
@@ -209,7 +212,11 @@ class FeedActivity : AppCompatActivity() {
             }
         }
 
-        builder.setCancelable(false)
+        builder.setOnKeyListener { dialog, keyCode, _ ->
+            dialog.dismiss()
+            keyCode == KeyEvent.KEYCODE_BACK
+        }
+
         builder.setPositiveButton("완료") { _, _ ->
             var item = ""
             val editor = pref.edit()
