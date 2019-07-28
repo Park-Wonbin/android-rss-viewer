@@ -30,7 +30,7 @@ class FeedActivity : AppCompatActivity() {
     private val mAPIClient = APIClient()
 
     // for RecyclerView
-    private var mFeedAdapter: LiveSliderAdapter<Item>? = null
+    private lateinit var mFeedAdapter: LiveSliderAdapter<Item>
 
     // for Subscribe
     private lateinit var pref: SharedPreferences
@@ -94,7 +94,7 @@ class FeedActivity : AppCompatActivity() {
                     data[idx].items = obj.items
                 }
 
-                mFeedAdapter!!.setData(data)
+            mFeedAdapter.setData(data)
             swipe_layout.visibility = View.VISIBLE
             swipe_layout.isRefreshing = false
             progressBar.visibility = View.GONE
@@ -113,7 +113,7 @@ class FeedActivity : AppCompatActivity() {
 
     private fun recyclerViewSetting() {
         mFeedAdapter = LiveSliderAdapter(NewsPageAdapter(), true)
-        mFeedAdapter!!.setHasStableIds(true)
+        mFeedAdapter.setHasStableIds(true)
 
         recycler_view.itemAnimator = null // Blink animation cancel(when data changed)
         recycler_view.layoutManager = LinearLayoutManager(applicationContext, RecyclerView.VERTICAL, false)
@@ -147,7 +147,7 @@ class FeedActivity : AppCompatActivity() {
                         }
                     }
 
-                    mFeedAdapter!!.startAnimation(animationItemPosition)
+                    mFeedAdapter.startAnimation(animationItemPosition)
                 }
             }
         })
@@ -199,45 +199,40 @@ class FeedActivity : AppCompatActivity() {
             }
         }
 
-        builder.setTitle("보고싶은 채널을 구독해주세요.")
-        builder.setCancelable(false)
-
-        builder.setMultiChoiceItems(channelTitles, subscribedChannels) { _, position, isChecked ->
-            if (isChecked) {
-                if (!selectedChannels.contains(position)) {
+        builder.setTitle("보고싶은 채널을 구독해주세요.").setCancelable(false)
+            .setMultiChoiceItems(channelTitles, subscribedChannels) { _, position, isChecked ->
+                if (isChecked && !selectedChannels.contains(position)) {
                     selectedChannels.add(position)
+                } else if (selectedChannels.contains(position)) {
+                    selectedChannels.remove(position)
                 }
-            } else if (selectedChannels.contains(position)) {
-                selectedChannels.remove(position)
             }
-        }
-
-        builder.setOnKeyListener { dialog, keyCode, _ ->
-            dialog.dismiss()
-            keyCode == KeyEvent.KEYCODE_BACK
-        }
-
-        builder.setPositiveButton("완료") { _, _ ->
-            var item = ""
-            val editor = pref.edit()
-
-            mSubscribedChannelList = mutableListOf()
-            for (i in 0 until selectedChannels.size) {
-                mSubscribedChannelList.add(mSubscribeList[selectedChannels[i]].id)
-                item += mSubscribeList[selectedChannels[i]].id
-
-                if (i != selectedChannels.size - 1) item += "/"
+            .setOnKeyListener { dialog, keyCode, _ ->
+                dialog.dismiss()
+                keyCode == KeyEvent.KEYCODE_BACK
             }
+            .setPositiveButton("완료") { _, _ ->
+                var item = ""
+                val editor = pref.edit()
 
-            editor.putString("channelId", item)
-            editor.apply()
-            updateSubscribeList()
+                mSubscribedChannelList = mutableListOf()
+                for ((idx, obj) in selectedChannels.withIndex()) {
+                    val subscribedID = mSubscribeList[obj].id
+                    mSubscribedChannelList.add(subscribedID)
+                    item += subscribedID
 
-            progressBar.visibility = View.VISIBLE
-            getRSSData()
-        }
+                    if (idx != selectedChannels.size - 1) item += "/"
+                }
 
-        builder.setNegativeButton("취소") { dialogInterface, _ -> dialogInterface.dismiss() }
+                editor.putString("channelId", item)
+                editor.apply()
+                updateSubscribeList()
+
+                progressBar.visibility = View.VISIBLE
+                getRSSData()
+            }
+            .setNegativeButton("취소") { dialogInterface, _ -> dialogInterface.dismiss() }
+
         return builder
     }
 
@@ -262,8 +257,7 @@ class FeedActivity : AppCompatActivity() {
             newData.add(newItem)
         }
 
-
         val array = Array(newData.size) { LiveSliderFeed<Item>() }
-        mFeedAdapter!!.setData(newData.toArray(array))
+        mFeedAdapter.setData(newData.toArray(array))
     }
 }
