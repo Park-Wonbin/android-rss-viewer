@@ -16,8 +16,7 @@ import com.github.poscat.liveslider.LiveSliderFeed
 import com.github.poscat.rss.viewer.R
 import com.github.poscat.rss.viewer.adapter.NewsPageAdapter
 import com.github.poscat.rss.viewer.model.Channel
-import com.github.poscat.rss.viewer.model.Items
-import com.github.poscat.rss.viewer.model.News
+import com.github.poscat.rss.viewer.model.Item
 import com.github.poscat.rss.viewer.utility.RetrofitAPI
 import com.github.ybq.android.spinkit.style.Wave
 import com.google.gson.Gson
@@ -38,10 +37,10 @@ class FeedActivity : AppCompatActivity() {
     private lateinit var mGson: Gson
 
     // for RecyclerView
-    private var mFeedAdapter: LiveSliderAdapter<Items>? = null
+    private var mFeedAdapter: LiveSliderAdapter<Item>? = null
 
     // for Searching
-    private var mOriginalData: Array<LiveSliderFeed<Items>>? = null
+    private var mOriginalData: Array<LiveSliderFeed<Item>>? = null
 
     // for Subscribe
     private var mSubscribeChannelId: String? = null
@@ -139,11 +138,11 @@ class FeedActivity : AppCompatActivity() {
 
     private fun searchFilter(str: String) {
         val word = str.toLowerCase()
-        val newData = ArrayList<LiveSliderFeed<Items>>()
+        val newData = ArrayList<LiveSliderFeed<Item>>()
 
         if (mOriginalData != null)
             for (i in mOriginalData!!.iterator()) {
-                val newItem = LiveSliderFeed<Items>()
+                val newItem = LiveSliderFeed<Item>()
                 newItem.category = i.category
                 newItem.items = ArrayList()
 
@@ -159,7 +158,7 @@ class FeedActivity : AppCompatActivity() {
                 newData.add(newItem)
             }
 
-        val array = Array(newData.size) { LiveSliderFeed<Items>() }
+        val array = Array(newData.size) { LiveSliderFeed<Item>() }
         mFeedAdapter!!.setData(newData.toArray(array))
     }
 
@@ -170,10 +169,10 @@ class FeedActivity : AppCompatActivity() {
             progressBar.visibility = View.GONE
 
             val result = response.body()
-            val listType = object : TypeToken<Array<News>>() {}.type
-            val rawData = mGson.fromJson<Array<News>>(result, listType)
+            val listType = object : TypeToken<Array<Channel>>() {}.type
+            val rawData = mGson.fromJson<Array<Channel>>(result, listType)
             val size = rawData?.size ?: 0
-            val data = Array(size) { LiveSliderFeed<Items>() }
+            val data = Array(size) { LiveSliderFeed<Item>() }
 
             if (rawData != null) {
                 for ((idx, obj) in rawData.withIndex()) {

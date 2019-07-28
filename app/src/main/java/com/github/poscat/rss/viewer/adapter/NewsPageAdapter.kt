@@ -18,15 +18,15 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.github.poscat.liveslider.LiveSliderPagerAdapter
 import com.github.poscat.rss.viewer.activity.NewsActivity
-import com.github.poscat.rss.viewer.model.Items
+import com.github.poscat.rss.viewer.model.Item
 import com.github.poscat.rss.viewer.R
 import com.github.poscat.rss.viewer.utility.ImageFilter
 import com.github.poscat.rss.viewer.utility.TimeFormat
 import kotlinx.android.synthetic.main.page.view.*
 
-class NewsPageAdapter : LiveSliderPagerAdapter<Items>() {
+class NewsPageAdapter : LiveSliderPagerAdapter<Item>() {
     @SuppressLint("SetTextI18n")
-    override fun createView(context: Context, container: ViewGroup, item: Items): View {
+    override fun createView(context: Context, container: ViewGroup, item: Item): View {
         val inflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val view = inflater.inflate(R.layout.page, container, false)
 
