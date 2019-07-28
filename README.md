@@ -1,6 +1,7 @@
 # Android RSS Viewer
 
 [![Build Status](https://travis-ci.org/Park-Wonbin/android-rss-viewer.svg?branch=master)](https://travis-ci.org/Park-Wonbin/android-rss-viewer)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 <p align="center">
   <img src="https://github.com/Park-Wonbin/android-rss-viewer/blob/master/screenshot/icon.png" width="15%" height="15%"/>
