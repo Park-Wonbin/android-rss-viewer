@@ -17,7 +17,6 @@ import com.github.poscat.rss.viewer.R
 import com.github.poscat.rss.viewer.adapter.NewsPageAdapter
 import com.github.poscat.rss.viewer.model.Channel
 import com.github.poscat.rss.viewer.model.Item
-import com.github.poscat.rss.viewer.model.Zipper
 import com.github.poscat.rss.viewer.utility.APIClient
 import com.github.ybq.android.spinkit.style.Wave
 import io.reactivex.disposables.CompositeDisposable
@@ -49,10 +48,6 @@ class FeedActivity : AppCompatActivity() {
 
         updateSubscribeList()
         getRSSData()
-    }
-
-    private fun createZipper(channels: List<Channel>, items: List<Channel>): Zipper {
-        return Zipper(channels, items)
     }
 
     private fun getRSSData() {
@@ -132,46 +127,44 @@ class FeedActivity : AppCompatActivity() {
     }
 
     private fun createChannelListSelector() : AlertDialog.Builder {
-        val mBuilder = AlertDialog.Builder(this@FeedActivity)
-        val mUserItems: ArrayList<Int> = ArrayList()
-        val listItems = Array(mSubscribeList.size) { "" }
-        val listItemsId = Array(mSubscribeList.size) { "" }
-        val checkedItems = BooleanArray(mSubscribeList.size)
+        val builder = AlertDialog.Builder(this@FeedActivity)
+        val selectedChannels: ArrayList<Int> = ArrayList()
+        val channelTitles = Array(mSubscribeList.size) { "" }
+        val subscribedChannels = BooleanArray(mSubscribeList.size)
 
         for ((idx, obj) in mSubscribeList.withIndex()) {
-            listItems[idx] = obj.title ?: getString(R.string.empty_content)
-            listItemsId[idx] = obj.id
+            channelTitles[idx] = obj.title ?: getString(R.string.empty_content)
 
             for (i in mSubscribedChannelList) {
                 if (i == obj.id) {
-                    checkedItems[idx] = true
-                    mUserItems.add(idx)
+                    subscribedChannels[idx] = true
+                    selectedChannels.add(idx)
                 }
             }
         }
 
-        mBuilder.setTitle("보고싶은 채널을 구독해주세요.")
-        mBuilder.setMultiChoiceItems(listItems, checkedItems) { _, position, isChecked ->
+        builder.setTitle("보고싶은 채널을 구독해주세요.")
+        builder.setMultiChoiceItems(channelTitles, subscribedChannels) { _, position, isChecked ->
             if (isChecked) {
-                if (!mUserItems.contains(position)) {
-                    mUserItems.add(position)
+                if (!selectedChannels.contains(position)) {
+                    selectedChannels.add(position)
                 }
-            } else if (mUserItems.contains(position)) {
-                mUserItems.remove(position)
+            } else if (selectedChannels.contains(position)) {
+                selectedChannels.remove(position)
             }
         }
 
-        mBuilder.setCancelable(false)
-        mBuilder.setPositiveButton("완료") { _, _ ->
+        builder.setCancelable(false)
+        builder.setPositiveButton("완료") { _, _ ->
             var item = ""
             val editor = pref.edit()
 
             mSubscribedChannelList = mutableListOf()
-            for (i in 0 until mUserItems.size) {
-                mSubscribedChannelList.add(listItemsId[mUserItems[i]])
-                item += listItemsId[mUserItems[i]]
+            for (i in 0 until selectedChannels.size) {
+                mSubscribedChannelList.add(mSubscribeList[selectedChannels[i]].id)
+                item += mSubscribeList[selectedChannels[i]].id
 
-                if (i != mUserItems.size - 1) item += "/"
+                if (i != selectedChannels.size - 1) item += "/"
             }
 
             editor.putString("channelId", item)
@@ -182,8 +175,8 @@ class FeedActivity : AppCompatActivity() {
             getRSSData()
         }
 
-        mBuilder.setNegativeButton("취소") { dialogInterface, _ -> dialogInterface.dismiss() }
-        return mBuilder
+        builder.setNegativeButton("취소") { dialogInterface, _ -> dialogInterface.dismiss() }
+        return builder
     }
 
     private fun uiSetting() {
@@ -203,24 +196,23 @@ class FeedActivity : AppCompatActivity() {
         val word = str.toLowerCase()
         val newData = ArrayList<LiveSliderFeed<Item>>()
 
-        if (mChannelList.isNotEmpty()) {
-            for (channel in mChannelList.iterator()) {
-                val newItem = LiveSliderFeed<Item>()
-                newItem.category = channel.title ?: getString(R.string.empty_content)
-                newItem.items = ArrayList()
+        for (channel in mChannelList) {
+            val newItem = LiveSliderFeed<Item>()
+            newItem.category = channel.title ?: getString(R.string.empty_content)
+            newItem.items = ArrayList()
 
-                if (channel.items != null)
-                    for (item in channel.items!!.iterator()) {
-                        // Check if the title or description contain the 'word'.
-                        if (item.title != null && item.title!!.toLowerCase().contains(word))
-                            newItem.items!!.add(item)
-                        else if (item.description.toLowerCase().contains(word))
-                            newItem.items!!.add(item)
-                    }
+            if (channel.items != null)
+                for (item in channel.items!!.iterator()) {
+                    // Check if the title or description contain the 'word'.
+                    if (item.title != null && item.title!!.toLowerCase().contains(word))
+                        newItem.items!!.add(item)
+                    else if (item.description.toLowerCase().contains(word))
+                        newItem.items!!.add(item)
+                }
 
-                newData.add(newItem)
-            }
+            newData.add(newItem)
         }
+
 
         val array = Array(newData.size) { LiveSliderFeed<Item>() }
         mFeedAdapter!!.setData(newData.toArray(array))
