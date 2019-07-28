@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.Menu
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
@@ -76,7 +77,7 @@ class FeedActivity : AppCompatActivity() {
         val request = if (mSubscribedChannelList.isEmpty()) mAPIClient.getChannelsAPI()
         else mAPIClient.getSelectedChannelsAPI(mSubscribedChannelList.toTypedArray())
 
-        disposable.add(request.subscribe {
+        disposable.add(request.subscribe({
                 val data = Array(it.items.size) { LiveSliderFeed<Item>() }
                 mChannelList = it.items.toTypedArray()
                 mSubscribeList = it.channels.toTypedArray()
@@ -93,10 +94,15 @@ class FeedActivity : AppCompatActivity() {
                 }
 
                 mFeedAdapter!!.setData(data)
-                swipe_layout.visibility = View.VISIBLE
-                swipe_layout.isRefreshing = false
-                progressBar.visibility = View.GONE
-            })
+            swipe_layout.visibility = View.VISIBLE
+            swipe_layout.isRefreshing = false
+            progressBar.visibility = View.GONE
+        }, { error ->
+            Toast.makeText(this, error.message, Toast.LENGTH_SHORT).show()
+            swipe_layout.visibility = View.VISIBLE
+            swipe_layout.isRefreshing = false
+            progressBar.visibility = View.GONE
+        }))
     }
 
     private fun statusBarSetting() {
