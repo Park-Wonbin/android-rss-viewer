@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">RSS Viewer</string>
+    <string name="empty_content">Not yet Updated...</string>
 </resources>

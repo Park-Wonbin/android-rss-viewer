@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.View
 import androidx.appcompat.app.AlertDialog
@@ -21,17 +22,21 @@ import com.github.poscat.rss.viewer.utility.RetrofitAPI
 import com.github.ybq.android.spinkit.style.Wave
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.feed.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
+import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 
 class FeedActivity : AppCompatActivity() {
 
     // for Parsing
-    private lateinit var mRetrofit: Retrofit
     private lateinit var mRetrofitAPI: RetrofitAPI
     private lateinit var mCallNewsList: Call<String>
     private lateinit var mGson: Gson
@@ -39,19 +44,46 @@ class FeedActivity : AppCompatActivity() {
     // for RecyclerView
     private var mFeedAdapter: LiveSliderAdapter<Item>? = null
 
-    // for Searching
-    private var mOriginalData: Array<LiveSliderFeed<Item>>? = null
-
     // for Subscribe
     private var mSubscribeChannelId: String? = null
     private lateinit var pref: SharedPreferences
-    private var channelIdList = mutableListOf<String>()
+    private var mChannelList = arrayOf<Channel>()
+    private var mSubscribedChannelList = mutableListOf<String>()
+    private val disposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.feed)
         pref = getSharedPreferences("SUBSCRIBE", Activity.MODE_PRIVATE)
 
+        val provider = Retrofit.Builder().baseUrl("https://rss-search-api.herokuapp.com")
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.createAsync())
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(RetrofitAPI::class.java)
+
+        val observe = provider.getChannels()
+            .flatMap {
+                Observable.just(it)
+            }.observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe{}
+            .doOnTerminate{}
+
+        progressBarSetting()
+        disposable.add(provider.getChannels()
+            .flatMap {
+                Observable.just(it)
+            }.observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe{}
+            .doOnTerminate{}
+            .subscribe{
+                swipe_layout.visibility = View.VISIBLE
+                swipe_layout.isRefreshing = false
+                progressBar.visibility = View.GONE
+                Log.d("retrofit", it.size.toString())
+            })
+
+        /*
         statusBarSetting()
         recyclerViewSetting()
         progressBarSetting()
@@ -60,12 +92,12 @@ class FeedActivity : AppCompatActivity() {
         retrofitBuilder()
         updateSubscribeList()
         getRSSData()
+        */
     }
 
     private fun getRSSData() {
-        mCallNewsList = if (channelIdList.size > 0) mRetrofitAPI.getNewsList(*channelIdList.toTypedArray())
+        mCallNewsList = if (mSubscribedChannelList.size > 0) mRetrofitAPI.getNewsList(*mSubscribedChannelList.toTypedArray())
         else mRetrofitAPI.getNewsListAll()
-
         mCallNewsList.enqueue(mRetrofitCallback)
     }
 
@@ -111,8 +143,63 @@ class FeedActivity : AppCompatActivity() {
     private fun updateSubscribeList() {
         mSubscribeChannelId = pref.getString("channelId", "")
         if (mSubscribeChannelId != "") {
-            channelIdList = mSubscribeChannelId.toString().split("/") as MutableList<String>
+            mSubscribedChannelList = mSubscribeChannelId.toString().split("/") as MutableList<String>
         }
+    }
+
+    private fun createChannelListSelector() : AlertDialog.Builder {
+        val mBuilder = AlertDialog.Builder(this@FeedActivity)
+        val mUserItems: ArrayList<Int> = ArrayList()
+        val listItems = Array(mChannelList.size) { "" }
+        val listItemsId = Array(mChannelList.size) { "" }
+        val checkedItems = BooleanArray(mChannelList.size)
+
+        for ((idx, obj) in mChannelList.withIndex()) {
+            listItems[idx] = obj.title ?: getString(R.string.empty_content)
+            listItemsId[idx] = obj.id
+
+            for (i in mSubscribedChannelList) {
+                if (i == obj.id) {
+                    checkedItems[idx] = true
+                    mUserItems.add(idx)
+                }
+            }
+        }
+
+        mBuilder.setTitle("보고싶은 채널을 구독해주세요.")
+        mBuilder.setMultiChoiceItems(listItems, checkedItems) { _, position, isChecked ->
+            if (isChecked) {
+                if (!mUserItems.contains(position)) {
+                    mUserItems.add(position)
+                }
+            } else if (mUserItems.contains(position)) {
+                mUserItems.remove(position)
+            }
+        }
+
+        mBuilder.setCancelable(false)
+        mBuilder.setPositiveButton("완료") { _, _ ->
+            var item = ""
+            val editor = pref.edit()
+
+            mSubscribedChannelList = mutableListOf()
+            for (i in 0 until mUserItems.size) {
+                mSubscribedChannelList.add(listItemsId[mUserItems[i]])
+                item += listItemsId[mUserItems[i]]
+
+                if (i != mUserItems.size - 1) item += "/"
+            }
+
+            editor.putString("channelId", item)
+            editor.commit()
+            updateSubscribeList()
+
+            progressBar.visibility = View.VISIBLE
+            getRSSData()
+        }
+
+        mBuilder.setNegativeButton("취소") { dialogInterface, _ -> dialogInterface.dismiss() }
+        return mBuilder
     }
 
     private fun uiSetting() {
@@ -123,72 +210,71 @@ class FeedActivity : AppCompatActivity() {
 
         // Subscribe Button
         fab.setOnClickListener {
-            // Get news channel list
-            mCallNewsList = mRetrofitAPI.getChannelList()
-            mCallNewsList.enqueue(mChannelCallback)
+            val mDialog = createChannelListSelector().create()
+            mDialog.show()
         }
     }
 
     private fun retrofitBuilder() {
+        val retrofit = Retrofit.Builder().baseUrl("https://rss-search-api.herokuapp.com").
+            addConverterFactory(GsonConverterFactory.create()).build()
+        mRetrofitAPI = retrofit.create(RetrofitAPI::class.java)
         mGson = Gson()
-        mRetrofit = Retrofit.Builder().baseUrl("https://rss-search-api.herokuapp.com").
-            addConverterFactory(ScalarsConverterFactory.create()).build()
-        mRetrofitAPI = mRetrofit.create(RetrofitAPI::class.java)
     }
 
     private fun searchFilter(str: String) {
         val word = str.toLowerCase()
         val newData = ArrayList<LiveSliderFeed<Item>>()
 
-        if (mOriginalData != null)
-            for (i in mOriginalData!!.iterator()) {
+        if (mChannelList.isNotEmpty()) {
+            for (channel in mChannelList.iterator()) {
                 val newItem = LiveSliderFeed<Item>()
-                newItem.category = i.category
+                newItem.category = channel.title ?: getString(R.string.empty_content)
                 newItem.items = ArrayList()
 
-                if (i.items != null)
-                    for (j in i.items!!.iterator()) {
+                if (channel.items != null)
+                    for (item in channel.items!!.iterator()) {
                         // Check if the title or description contain the 'word'.
-                        if(j.title != null && j.title!!.toLowerCase().contains(word))
-                            newItem.items!!.add(j)
-                        else if(j.description.toLowerCase().contains(word))
-                            newItem.items!!.add(j)
+                        if (item.title != null && item.title!!.toLowerCase().contains(word))
+                            newItem.items!!.add(item)
+                        else if (item.description.toLowerCase().contains(word))
+                            newItem.items!!.add(item)
                     }
 
                 newData.add(newItem)
             }
+        }
 
         val array = Array(newData.size) { LiveSliderFeed<Item>() }
         mFeedAdapter!!.setData(newData.toArray(array))
     }
 
     private val mRetrofitCallback = object: Callback<String> {
-        override fun onResponse(call:Call<String>, response: Response<String>) {
-            swipe_layout.visibility = View.VISIBLE
-            swipe_layout.isRefreshing = false
-            progressBar.visibility = View.GONE
-
+        override fun onResponse(call: Call<String>, response: Response<String>) {
             val result = response.body()
             val listType = object : TypeToken<Array<Channel>>() {}.type
-            val rawData = mGson.fromJson<Array<Channel>>(result, listType)
-            val size = rawData?.size ?: 0
-            val data = Array(size) { LiveSliderFeed<Item>() }
+            mChannelList = mGson.fromJson(result, listType)
 
-            if (rawData != null) {
-                for ((idx, obj) in rawData.withIndex()) {
+            val data = Array(mChannelList.size) { LiveSliderFeed<Item>() }
+
+            if (mChannelList.isNotEmpty()) {
+                for ((idx, obj) in mChannelList.withIndex()) {
                     if (obj.title == null) {
-                        data[idx].category = "Not yet updated"
+                        data[idx].category = getString(R.string.empty_content)
                         continue
                     }
-                    obj.items!!.sortByDescending { it.published }
 
+                    obj.items?.sortByDescending { it.published }
                     data[idx].category = obj.title!!
                     data[idx].items = obj.items
                 }
             }
 
             mFeedAdapter!!.setData(data)
-            mOriginalData = data
+
+            swipe_layout.visibility = View.VISIBLE
+            swipe_layout.isRefreshing = false
+            progressBar.visibility = View.GONE
         }
 
         override fun onFailure(call:Call<String>, t:Throwable) {
@@ -204,65 +290,7 @@ class FeedActivity : AppCompatActivity() {
         override fun onResponse(call: Call<String>, response: Response<String>) {
             val result = response.body()
             val listType = object : TypeToken<Array<Channel>>() {}.type
-            val rawData = mGson.fromJson<Array<Channel>>(result, listType)
-
-            val mUserItems: ArrayList<Int> = ArrayList()
-            val listItems = Array(rawData.size) { "" }
-            val listItemsId = Array(rawData.size) { "" }
-            val checkedItems = BooleanArray(rawData!!.size)
-
-            for ((idx, obj) in rawData.withIndex()) {
-                listItems[idx] = obj.title ?: "Not yet updated"
-
-                listItemsId[idx] = obj.id
-                for (i in channelIdList) {
-                    if (i == obj.id) {
-                        checkedItems[idx] = true
-                        mUserItems.add(idx)
-                    }
-                }
-            }
-
-            // Create Dialog for Subscribe
-            val mBuilder = AlertDialog.Builder(this@FeedActivity)
-            mBuilder.setTitle("보고싶은 채널을 구독해주세요.")
-            mBuilder.setMultiChoiceItems(
-                listItems, checkedItems
-            ) { _, position, isChecked ->
-                if (isChecked) {
-                    if (!mUserItems.contains(position)) {
-                        mUserItems.add(position)
-                    }
-                } else if (mUserItems.contains(position)) {
-                    mUserItems.remove(position)
-                }
-            }
-
-            mBuilder.setCancelable(false)
-            mBuilder.setPositiveButton("완료") { _, _ ->
-                var item = ""
-                val editor = pref.edit()
-
-                channelIdList = mutableListOf()
-                for (i in 0 until mUserItems.size) {
-                    channelIdList.add(listItemsId[mUserItems[i]])
-                    item += listItemsId[mUserItems[i]]
-
-                    if (i != mUserItems.size - 1) item += "/"
-                }
-
-                editor.putString("channelId", item)
-                editor.commit()
-                updateSubscribeList()
-
-                progressBar.visibility = View.VISIBLE
-                getRSSData()
-            }
-
-            mBuilder.setNegativeButton("취소") { dialogInterface, _ -> dialogInterface.dismiss() }
-
-            val mDialog = mBuilder.create()
-            mDialog.show()
+            mChannelList = mGson.fromJson(result, listType)
         }
 
         override fun onFailure(call: Call<String>, t: Throwable) {
