@@ -17,6 +17,26 @@
 	
 	</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 	
+	<LinearLayout
+		android:id="@+id/no_result"
+		android:visibility="gone"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center"
+		android:orientation="vertical"
+		android:gravity="center">
+		
+		<ImageView android:layout_width="30dp"
+				   android:layout_height="30dp"
+				   android:src="@drawable/ic_action_search_dark"
+				   android:layout_margin="10dp"/>
+		
+		<TextView android:layout_width="wrap_content"
+				  android:layout_height="wrap_content"
+				  android:text="There are no results to be shown."
+				  android:textSize="13dp"/>
+	</LinearLayout>
+	
 	<ProgressBar
 		android:id="@+id/progressBar"
 		android:layout_width="wrap_content"

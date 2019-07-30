@@ -3,19 +3,25 @@ package com.github.poscat.rss.viewer.activity
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.github.poscat.liveslider.LiveSliderFeed
 import com.github.poscat.rss.viewer.R
 import com.github.poscat.rss.viewer.adapter.RecentNewsAdapter
 import com.github.poscat.rss.viewer.model.Channel
+import com.github.poscat.rss.viewer.model.Item
 import com.github.poscat.rss.viewer.utility.APIClient
 import com.github.ybq.android.spinkit.style.Wave
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.feed.*
+import kotlinx.android.synthetic.main.feed.progressBar
+import kotlinx.android.synthetic.main.recent_news.*
 import kotlinx.android.synthetic.main.recent_news.recycler_view
 import kotlinx.android.synthetic.main.recent_news.swipe_layout
 
@@ -73,6 +79,27 @@ class RecentNewsActivity : AppCompatActivity(), RecentNewsAdapter.listOnClickLis
         return super.onOptionsItemSelected(item)
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.menu, menu)
+        val searchViewItem = menu.findItem(R.id.action_search)
+        val searchViewAndroidActionBar = searchViewItem.actionView as SearchView
+        searchViewAndroidActionBar.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                searchViewAndroidActionBar.clearFocus()
+                searchFilter(query)
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                searchFilter(newText)
+
+                return false
+            }
+        })
+        return super.onCreateOptionsMenu(menu)
+    }
+
     private fun progressBarSetting() {
         val wave = Wave()
         wave.color = getColor(R.color.colorAccent)
@@ -100,5 +127,25 @@ class RecentNewsActivity : AppCompatActivity(), RecentNewsAdapter.listOnClickLis
             swipe_layout.isRefreshing = false
             progressBar.visibility = View.GONE
         }))
+    }
+
+    private fun searchFilter(str: String) {
+        val word = str.toLowerCase()
+
+        val newItem = ArrayList<Item>()
+        if (mChannelList.isNotEmpty()) {
+            for (item in mChannelList[0].items!!.iterator()) {
+                // Check if the title or description contain the 'word'.
+                if (item.title != null && item.title!!.toLowerCase().contains(word))
+                    newItem.add(item)
+                else if (item.description.toLowerCase().contains(word))
+                    newItem.add(item)
+            }
+        }
+
+        if (newItem.size == 0) no_result.visibility = View.VISIBLE
+        else no_result.visibility = View.GONE
+
+        mAdapter?.setData(newItem)
     }
 }
