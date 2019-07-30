@@ -1,6 +1,7 @@
 package com.github.poscat.rss.viewer.activity
 
 import android.app.Activity
+import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
@@ -170,8 +171,9 @@ class FeedActivity : AppCompatActivity() {
 
         // Subscribe Button
         fab.setOnClickListener {
-            val mDialog = createChannelListSelector().create()
-            mDialog.show()
+            //val mDialog = createChannelListSelector().create()
+            //mDialog.show()
+            startActivity(Intent(applicationContext, RecentNewsActivity::class.java).putExtra("title", "다음뉴스 - 사회Top RSS"))
         }
     }
 
