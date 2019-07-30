@@ -14,10 +14,10 @@ import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.NO_POSITION
-import com.github.poscat.liveslider.LiveSliderAdapter
 import com.github.poscat.liveslider.LiveSliderFeed
 import com.github.poscat.rss.viewer.R
-import com.github.poscat.rss.viewer.adapter.NewsPageAdapter
+import com.github.poscat.rss.viewer.adapter.RSSPagerAdapter
+import com.github.poscat.rss.viewer.adapter.RSSRecyclerViewAdapter
 import com.github.poscat.rss.viewer.model.Channel
 import com.github.poscat.rss.viewer.model.Item
 import com.github.poscat.rss.viewer.utility.APIClient
@@ -30,7 +30,7 @@ class FeedActivity : AppCompatActivity() {
     private val mAPIClient = APIClient()
 
     // for RecyclerView
-    private lateinit var mFeedAdapter: LiveSliderAdapter<Item>
+    private lateinit var mFeedAdapter: RSSRecyclerViewAdapter
 
     // for Subscribe
     private lateinit var pref: SharedPreferences
@@ -79,11 +79,12 @@ class FeedActivity : AppCompatActivity() {
         else mAPIClient.getSelectedChannelsAPI(mSubscribedChannelList.toTypedArray())
 
         disposable.add(request.subscribe({
-                val data = Array(it.items.size) { LiveSliderFeed<Item>() }
+            val data = Array(it.items.size) { LiveSliderFeed<Item, Int>() }
                 mChannelList = it.items.toTypedArray()
                 mSubscribeList = it.channels.toTypedArray()
 
                 for ((idx, obj) in mChannelList.withIndex()) {
+                    data[idx].id = obj.id
                     if (obj.title == null) {
                         data[idx].category = getString(R.string.empty_content)
                         continue
@@ -94,7 +95,7 @@ class FeedActivity : AppCompatActivity() {
                     data[idx].items = obj.items
                 }
 
-            mFeedAdapter.setData(data)
+            mFeedAdapter.setFeedData(data)
             swipe_layout.visibility = View.VISIBLE
             swipe_layout.isRefreshing = false
             progressBar.visibility = View.GONE
@@ -112,7 +113,7 @@ class FeedActivity : AppCompatActivity() {
     }
 
     private fun recyclerViewSetting() {
-        mFeedAdapter = LiveSliderAdapter(NewsPageAdapter(), true)
+        mFeedAdapter = RSSRecyclerViewAdapter(applicationContext, RSSPagerAdapter())
         mFeedAdapter.setHasStableIds(true)
 
         recycler_view.itemAnimator = null // Blink animation cancel(when data changed)
@@ -170,8 +171,7 @@ class FeedActivity : AppCompatActivity() {
 
         // Subscribe Button
         fab.setOnClickListener {
-            val mDialog = createChannelListSelector().create()
-            mDialog.show()
+            createChannelListSelector().create().show()
         }
     }
 
@@ -192,7 +192,7 @@ class FeedActivity : AppCompatActivity() {
             channelTitles[idx] = obj.title ?: getString(R.string.empty_content)
 
             for (i in mSubscribedChannelList) {
-                if (i == obj.id) {
+                if (i == obj.id.toString()) {
                     subscribedChannels[idx] = true
                     selectedChannels.add(idx)
                 }
@@ -218,7 +218,7 @@ class FeedActivity : AppCompatActivity() {
                 mSubscribedChannelList = mutableListOf()
                 for ((idx, obj) in selectedChannels.withIndex()) {
                     val subscribedID = mSubscribeList[obj].id
-                    mSubscribedChannelList.add(subscribedID)
+                    mSubscribedChannelList.add(subscribedID.toString())
                     item += subscribedID
 
                     if (idx != selectedChannels.size - 1) item += "/"
@@ -238,10 +238,10 @@ class FeedActivity : AppCompatActivity() {
 
     private fun searchFilter(str: String) {
         val word = str.toLowerCase()
-        val newData = ArrayList<LiveSliderFeed<Item>>()
+        val newData = ArrayList<LiveSliderFeed<Item, Int>>()
 
         for (channel in mChannelList) {
-            val newItem = LiveSliderFeed<Item>()
+            val newItem = LiveSliderFeed<Item, Int>()
             newItem.category = channel.title ?: getString(R.string.empty_content)
             newItem.items = ArrayList()
 
@@ -257,7 +257,7 @@ class FeedActivity : AppCompatActivity() {
             newData.add(newItem)
         }
 
-        val array = Array(newData.size) { LiveSliderFeed<Item>() }
-        mFeedAdapter.setData(newData.toArray(array))
+        val array = Array(newData.size) { LiveSliderFeed<Item, Int>() }
+        mFeedAdapter.setFeedData(newData.toArray(array))
     }
 }
