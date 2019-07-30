@@ -1,21 +1,17 @@
 package com.github.poscat.rss.viewer.activity
 
-import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
-import com.github.poscat.rss.viewer.R
-import android.content.SharedPreferences
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.github.poscat.liveslider.LiveSliderFeed
+import com.github.poscat.rss.viewer.R
 import com.github.poscat.rss.viewer.adapter.RecentNewsAdapter
 import com.github.poscat.rss.viewer.model.Channel
-import com.github.poscat.rss.viewer.model.Item
 import com.github.poscat.rss.viewer.utility.APIClient
 import com.github.ybq.android.spinkit.style.Wave
 import io.reactivex.disposables.CompositeDisposable
@@ -29,9 +25,7 @@ class RecentNewsActivity : AppCompatActivity(), RecentNewsAdapter.listOnClickLis
 
     private val mAPIClient = APIClient()
     private var mChannelList = arrayOf<Channel>()
-    private var mSubscribedChannelList = mutableListOf<String>()
-
-    private var mChannelId: String? = null
+    private var mChannelId: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,18 +42,18 @@ class RecentNewsActivity : AppCompatActivity(), RecentNewsAdapter.listOnClickLis
         progressBarSetting()
 
         // RecyclerView
-        mAdapter = RecentNewsAdapter<RecentNewsActivity>(this)
+        mAdapter = RecentNewsAdapter(this)
         recycler_view.layoutManager = LinearLayoutManager(applicationContext, RecyclerView.VERTICAL, false)
         recycler_view.setHasFixedSize(true)
         recycler_view.adapter = mAdapter
 
-        mChannelId = intent.getStringExtra("id")
+        mChannelId = intent.getIntExtra("id", 0)
 
         swipe_layout.setOnRefreshListener {
-            getRSSData(mChannelId!!)
+            getRSSData(mChannelId.toString())
         }
 
-        getRSSData(mChannelId!!)
+        getRSSData(mChannelId.toString())
     }
 
     override fun gotoLink(link: String, title: String?) {
@@ -90,8 +84,7 @@ class RecentNewsActivity : AppCompatActivity(), RecentNewsAdapter.listOnClickLis
 
     private fun getRSSData(id: String) {
         val disposable = CompositeDisposable()
-        val request = if (mSubscribedChannelList.isEmpty()) mAPIClient.getChannelsAPI()
-        else mAPIClient.getSelectedChannelsAPI(Array(1){id})
+        val request = mAPIClient.getSelectedChannelsAPI(Array(1) { id })
 
         disposable.add(request.subscribe({
             mChannelList = it.items.toTypedArray()
