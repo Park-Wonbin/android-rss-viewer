@@ -27,11 +27,11 @@ class RecentNewsActivity : AppCompatActivity(), RecentNewsAdapter.listOnClickLis
 
     private var mAdapter: RecentNewsAdapter<RecentNewsActivity>? = null
 
-    private lateinit var pref: SharedPreferences
     private val mAPIClient = APIClient()
     private var mChannelList = arrayOf<Channel>()
-    private var mSubscribeList = arrayOf<Channel>()
     private var mSubscribedChannelList = mutableListOf<String>()
+
+    private var mChannelId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,15 +53,13 @@ class RecentNewsActivity : AppCompatActivity(), RecentNewsAdapter.listOnClickLis
         recycler_view.setHasFixedSize(true)
         recycler_view.adapter = mAdapter
 
+        mChannelId = intent.getStringExtra("id")
+
         swipe_layout.setOnRefreshListener {
-            getRSSData()
+            getRSSData(mChannelId!!)
         }
 
-        // --- 여기부터 데이터 불러와서 넣어주세요 ---
-        pref = getSharedPreferences("SUBSCRIBE", Activity.MODE_PRIVATE)
-
-        updateSubscribeList()
-        getRSSData()
+        getRSSData(mChannelId!!)
     }
 
     override fun gotoLink(link: String, title: String?) {
@@ -90,30 +88,14 @@ class RecentNewsActivity : AppCompatActivity(), RecentNewsAdapter.listOnClickLis
         swipe_layout.visibility = View.GONE
     }
 
-    private fun getRSSData() {
+    private fun getRSSData(id: String) {
         val disposable = CompositeDisposable()
         val request = if (mSubscribedChannelList.isEmpty()) mAPIClient.getChannelsAPI()
-        else mAPIClient.getSelectedChannelsAPI(mSubscribedChannelList.toTypedArray())
+        else mAPIClient.getSelectedChannelsAPI(Array(1){id})
 
         disposable.add(request.subscribe({
-            val data = Array(it.items.size) { LiveSliderFeed<Item>() }
             mChannelList = it.items.toTypedArray()
-            mSubscribeList = it.channels.toTypedArray()
-
-            for ((idx, obj) in mChannelList.withIndex()) {
-                if (obj.title == null) {
-                    data[idx].category = getString(R.string.empty_content)
-                    continue
-                }
-
-                obj.items?.sortByDescending { it.published }
-                data[idx].category = obj.title!!
-                data[idx].items = obj.items
-
-                mAdapter?.setData(obj.items)
-
-                break // 하나만 넣기
-            }
+            mAdapter?.setData(mChannelList[0].items)
 
             swipe_layout.visibility = View.VISIBLE
             swipe_layout.isRefreshing = false
@@ -124,12 +106,5 @@ class RecentNewsActivity : AppCompatActivity(), RecentNewsAdapter.listOnClickLis
             swipe_layout.isRefreshing = false
             progressBar.visibility = View.GONE
         }))
-    }
-
-    private fun updateSubscribeList() {
-        val subscribedChannelIDs = pref.getString("channelId", "")
-        if (subscribedChannelIDs != null && subscribedChannelIDs != "") {
-            mSubscribedChannelList = subscribedChannelIDs.toString().split("/") as MutableList<String>
-        }
     }
 }
