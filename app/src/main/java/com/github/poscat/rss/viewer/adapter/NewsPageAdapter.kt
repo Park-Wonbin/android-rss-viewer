@@ -83,6 +83,7 @@ class NewsPageAdapter : LiveSliderPagerAdapter<Item>() {
         // Set Link
         view.setOnClickListener {
             val intent = Intent(context, NewsActivity::class.java)
+            intent.putExtra("news_title", item.title)
             intent.putExtra("news_url", item.link)
             view.context.startActivity(intent)
         }

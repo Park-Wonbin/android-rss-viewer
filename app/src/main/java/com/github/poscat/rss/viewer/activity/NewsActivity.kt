@@ -3,6 +3,7 @@ package com.github.poscat.rss.viewer.activity
 import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.webkit.WebSettings
@@ -11,11 +12,15 @@ import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
 import com.github.poscat.rss.viewer.R
 import kotlinx.android.synthetic.main.news.*
+import android.content.Intent
 
 class NewsActivity : AppCompatActivity() {
 
     private lateinit var mWebView: WebView
     private lateinit var mWebSettings: WebSettings
+
+    private lateinit var mTitle: String
+    private lateinit var mLink: String
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,8 +28,7 @@ class NewsActivity : AppCompatActivity() {
         setContentView(R.layout.news)
 
         // Status Bar
-        val viewMain: View = window.decorView
-        viewMain.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
         window.statusBarColor = Color.parseColor("#ffffff")
 
         // Toolbar
@@ -52,7 +56,9 @@ class NewsActivity : AppCompatActivity() {
             }
         }
 
-        mWebView.loadUrl(intent.getStringExtra("news_url"))
+        mLink = intent.getStringExtra("news_url")
+        mTitle = intent.getStringExtra("news_title")
+        mWebView.loadUrl(mLink)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -61,8 +67,22 @@ class NewsActivity : AppCompatActivity() {
                 finish()
                 return true
             }
+            R.id.action_share -> {
+                val intent = Intent(Intent.ACTION_SEND)
+                intent.type = "text/plain"
+                intent.putExtra(Intent.EXTRA_TEXT, mTitle + " - " + mLink)
+                val chooser = Intent.createChooser(intent, "링크 공유하기")
+                startActivity(chooser)
+                return true
+            }
         }
         return super.onOptionsItemSelected(item)
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.share, menu)
+
+        return super.onCreateOptionsMenu(menu)
+    }
 }
