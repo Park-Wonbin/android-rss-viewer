@@ -1,5 +1,6 @@
 package com.github.poscat.rss.viewer.adapter
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -24,6 +25,7 @@ class RecentNewsAdapter<T>(private var mClickHandler: T): RecyclerView.Adapter<R
         fun gotoLink(link: String, title: String?)
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: CellListAdapterViewHolder, position: Int) {
         val thisItem = mData!![position]
 
@@ -58,7 +60,7 @@ class RecentNewsAdapter<T>(private var mClickHandler: T): RecyclerView.Adapter<R
 
     inner class CellListAdapterViewHolder(v: View, listener: listOnClickListener) : RecyclerView.ViewHolder(v), View.OnClickListener {
 
-        val listenerRef: WeakReference<listOnClickListener>
+        private val listenerRef: WeakReference<listOnClickListener>
         var mTitle: TextView = v.findViewById(R.id.title)
         var mDescription: TextView = v.findViewById(R.id.description)
         var mCreator_Time: TextView = v.findViewById(R.id.creator_time)

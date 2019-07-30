@@ -50,4 +50,16 @@ class APIClient {
 
         return createZipper(observe1, observe2)
     }
+
+    fun getSelectedChannelCountAPI(id: String, count: Int): Observable<Zipper> {
+        val observe1 = mRetrofitAPI.getChannels()
+            .subscribeOn(Schedulers.newThread())
+            .observeOn(AndroidSchedulers.mainThread())
+
+        val observe2 = mRetrofitAPI.getSelectedChannelCountItems(count, id)
+            .subscribeOn(Schedulers.newThread())
+            .observeOn(AndroidSchedulers.mainThread())
+
+        return createZipper(observe1, observe2)
+    }
 }

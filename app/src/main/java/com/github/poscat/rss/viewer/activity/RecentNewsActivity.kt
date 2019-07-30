@@ -84,10 +84,11 @@ class RecentNewsActivity : AppCompatActivity(), RecentNewsAdapter.listOnClickLis
 
     private fun getRSSData(id: String) {
         val disposable = CompositeDisposable()
-        val request = mAPIClient.getSelectedChannelsAPI(Array(1) { id })
+        val request = mAPIClient.getSelectedChannelCountAPI(id, 100)
 
         disposable.add(request.subscribe({
             mChannelList = it.items.toTypedArray()
+            mChannelList[0].items?.sortByDescending { it.published }
             mAdapter?.setData(mChannelList[0].items)
 
             swipe_layout.visibility = View.VISIBLE

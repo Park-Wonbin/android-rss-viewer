@@ -54,12 +54,11 @@ class RSSPagerAdapter : LiveSliderPagerAdapter<Item, Int>() {
                 view.video.visibility = View.INVISIBLE
 
                 // Set Image
-                if (item.enclosures != null)
-                    Glide.with(context).load(item.enclosures!![0].url)
-                        .placeholder(R.drawable.loading_img)
-                        .transform(ImageFilter())
-                        .error(R.drawable.default_img)
-                        .into(view.image)
+                Glide.with(context).load(item.enclosures!![0].url)
+                    .placeholder(R.drawable.loading_img)
+                    .transform(ImageFilter())
+                    .error(R.drawable.default_img)
+                    .into(view.image)
             } else if (item.enclosures!![0].type.contains("video")) {
                 view.video.visibility = View.VISIBLE
 
@@ -70,7 +69,7 @@ class RSSPagerAdapter : LiveSliderPagerAdapter<Item, Int>() {
                 // Set video link
                 val video = Uri.parse(item.enclosures!![0].url)
 
-                // view.video.setMediaController(mediaController);
+                // view.video.setMediaController(mediaController)
                 view.video.setMediaController(null)
                 view.video.setVideoURI(video)
                 view.video.setOnPreparedListener { mp -> mp.setVolume(0f, 0f) }
