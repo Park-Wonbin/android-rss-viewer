@@ -55,6 +55,20 @@ Screenshots
 </p>
 
 
+> Click to see the full article and share the link!
+
+<p align="center">
+    <img src="https://github.com/Park-Wonbin/android-rss-viewer/blob/master/screenshot/new-rss-viewer-6.gif" width="30%"/>
+</p>
+
+
+> You can see all the previous articles by clicking the category title.
+
+<p align="center">
+    <img src="https://github.com/Park-Wonbin/android-rss-viewer/blob/master/screenshot/new-rss-viewer-7.gif" width="30%"/>
+</p>
+
+
 Library Used
 ------------
 
