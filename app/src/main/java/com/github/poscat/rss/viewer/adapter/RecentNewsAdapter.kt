@@ -33,11 +33,13 @@ class RecentNewsAdapter<T>(private var mClickHandler: T): RecyclerView.Adapter<R
         holder.mTitle.text = thisItem.title
         holder.mDescription.text = thisItem.description
 
-        Glide.with(context).load(thisItem.enclosures!![0].url)
-            .placeholder(R.drawable.loading_img)
-            .transform(ImageFilter())
-            .error(R.drawable.default_img)
-            .into(holder.mImage)
+        if (thisItem.enclosures != null) {
+            Glide.with(context).load(thisItem.enclosures!![0].url)
+                .placeholder(R.drawable.loading_img)
+                .transform(ImageFilter())
+                .error(R.drawable.default_img)
+                .into(holder.mImage)
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CellListAdapterViewHolder {
@@ -65,7 +67,7 @@ class RecentNewsAdapter<T>(private var mClickHandler: T): RecyclerView.Adapter<R
 
         init {
             mItem.setOnClickListener(this)
-            listenerRef = WeakReference<listOnClickListener>(listener)
+            listenerRef = WeakReference(listener)
         }
 
         override fun onClick(v: View) {

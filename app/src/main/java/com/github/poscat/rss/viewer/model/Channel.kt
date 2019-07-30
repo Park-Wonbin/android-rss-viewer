@@ -3,7 +3,7 @@ package com.github.poscat.rss.viewer.model
 import com.google.gson.annotations.SerializedName
 
 data class Channel (
-    @SerializedName("id") var id: String,
+    @SerializedName("id") var id: Int,
     @SerializedName("rsslink") var rsslink: String,
     @SerializedName("title") var title: String? = null,
     @SerializedName("link") var link: String? = null,

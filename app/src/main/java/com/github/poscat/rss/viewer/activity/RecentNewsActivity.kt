@@ -2,17 +2,17 @@ package com.github.poscat.rss.viewer.activity
 
 import android.app.Activity
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
-import com.github.poscat.rss.viewer.R
-import android.content.SharedPreferences
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.poscat.liveslider.LiveSliderFeed
+import com.github.poscat.rss.viewer.R
 import com.github.poscat.rss.viewer.adapter.RecentNewsAdapter
 import com.github.poscat.rss.viewer.model.Channel
 import com.github.poscat.rss.viewer.model.Item
@@ -48,7 +48,7 @@ class RecentNewsActivity : AppCompatActivity(), RecentNewsAdapter.listOnClickLis
         progressBarSetting()
 
         // RecyclerView
-        mAdapter = RecentNewsAdapter<RecentNewsActivity>(this)
+        mAdapter = RecentNewsAdapter(this)
         recycler_view.layoutManager = LinearLayoutManager(applicationContext, RecyclerView.VERTICAL, false)
         recycler_view.setHasFixedSize(true)
         recycler_view.adapter = mAdapter
@@ -60,7 +60,6 @@ class RecentNewsActivity : AppCompatActivity(), RecentNewsAdapter.listOnClickLis
         // --- 여기부터 데이터 불러와서 넣어주세요 ---
         pref = getSharedPreferences("SUBSCRIBE", Activity.MODE_PRIVATE)
 
-        updateSubscribeList()
         getRSSData()
     }
 
@@ -92,11 +91,11 @@ class RecentNewsActivity : AppCompatActivity(), RecentNewsAdapter.listOnClickLis
 
     private fun getRSSData() {
         val disposable = CompositeDisposable()
-        val request = if (mSubscribedChannelList.isEmpty()) mAPIClient.getChannelsAPI()
-        else mAPIClient.getSelectedChannelsAPI(mSubscribedChannelList.toTypedArray())
+        val id = intent.getIntExtra("id", 0)
+        val request = mAPIClient.getSelectedChannelsAPI(Array(1) { id.toString() })
 
         disposable.add(request.subscribe({
-            val data = Array(it.items.size) { LiveSliderFeed<Item>() }
+            val data = Array(it.items.size) { LiveSliderFeed<Item, Int>() }
             mChannelList = it.items.toTypedArray()
             mSubscribeList = it.channels.toTypedArray()
 

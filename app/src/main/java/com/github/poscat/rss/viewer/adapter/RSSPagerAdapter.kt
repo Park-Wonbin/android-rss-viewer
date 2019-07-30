@@ -17,14 +17,14 @@ import android.widget.MediaController
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.github.poscat.liveslider.LiveSliderPagerAdapter
+import com.github.poscat.rss.viewer.R
 import com.github.poscat.rss.viewer.activity.NewsActivity
 import com.github.poscat.rss.viewer.model.Item
-import com.github.poscat.rss.viewer.R
 import com.github.poscat.rss.viewer.utility.ImageFilter
 import com.github.poscat.rss.viewer.utility.TimeFormat
 import kotlinx.android.synthetic.main.page.view.*
 
-class NewsPageAdapter : LiveSliderPagerAdapter<Item>() {
+class RSSPagerAdapter : LiveSliderPagerAdapter<Item, Int>() {
     @SuppressLint("SetTextI18n")
     override fun createView(context: Context, container: ViewGroup, item: Item): View {
         val inflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -87,6 +87,7 @@ class NewsPageAdapter : LiveSliderPagerAdapter<Item>() {
             intent.putExtra("news_url", item.link)
             view.context.startActivity(intent)
         }
+        view.isEnabled = false
 
         return view
     }
@@ -95,6 +96,7 @@ class NewsPageAdapter : LiveSliderPagerAdapter<Item>() {
         view.image.startAnimation(AnimationUtils.loadAnimation(context, R.anim.zoom))
         view.description.startAnimation(AnimationUtils.loadAnimation(context, R.anim.show))
         view.video?.start()
+        view.isEnabled = true
     }
 
     override fun stopAnimation(context: Context, view: View) {
@@ -102,5 +104,6 @@ class NewsPageAdapter : LiveSliderPagerAdapter<Item>() {
         view.description.visibility = View.INVISIBLE
         view.image.clearAnimation()
         view.video?.pause()
+        view.isEnabled = false
     }
 }
