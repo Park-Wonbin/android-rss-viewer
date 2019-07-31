@@ -21,16 +21,18 @@ class RecentNewsAdapter<T>(private var mClickHandler: T): RecyclerView.Adapter<R
     private lateinit var context: Context
     private var mData: ArrayList<Item>? = null
 
-    interface listOnClickListener {
-        fun gotoLink(link: String, title: String?)
+    interface ListOnClickListener {
+        fun openLink(link: String, title: String?)
     }
 
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: CellListAdapterViewHolder, position: Int) {
         val thisItem = mData!![position]
 
-        if (thisItem.author == null || thisItem.author!!.name == null) holder.mCreator_Time.text = TimeFormat.formatTimeString(thisItem.published)
-        else holder.mCreator_Time.text = thisItem.author!!.name + "  ·  " + TimeFormat.formatTimeString(thisItem.published)
+        if (thisItem.author == null || thisItem.author!!.name == null) holder.mCreatorTime.text =
+            TimeFormat.formatTimeString(thisItem.published)
+        else holder.mCreatorTime.text =
+            thisItem.author!!.name + "  ·  " + TimeFormat.formatTimeString(thisItem.published)
 
         holder.mTitle.text = thisItem.title
         holder.mDescription.text = thisItem.description
@@ -51,21 +53,22 @@ class RecentNewsAdapter<T>(private var mClickHandler: T): RecyclerView.Adapter<R
         val shouldAttachToParentImmediately = false
 
         val view = inflater.inflate(layoutIdForListItem, parent, shouldAttachToParentImmediately)
-        return CellListAdapterViewHolder(view, mClickHandler as listOnClickListener)
+        return CellListAdapterViewHolder(view, mClickHandler as ListOnClickListener)
     }
 
     override fun getItemCount(): Int {
         return if (mData == null) 0 else mData!!.size
     }
 
-    inner class CellListAdapterViewHolder(v: View, listener: listOnClickListener) : RecyclerView.ViewHolder(v), View.OnClickListener {
+    inner class CellListAdapterViewHolder(v: View, listener: ListOnClickListener) : RecyclerView.ViewHolder(v),
+        View.OnClickListener {
 
-        private val listenerRef: WeakReference<listOnClickListener>
+        private val listenerRef: WeakReference<ListOnClickListener>
+        private val mItem: LinearLayout = v.findViewById(R.id.item)
         var mTitle: TextView = v.findViewById(R.id.title)
         var mDescription: TextView = v.findViewById(R.id.description)
-        var mCreator_Time: TextView = v.findViewById(R.id.creator_time)
+        var mCreatorTime: TextView = v.findViewById(R.id.creator_time)
         var mImage: ImageView = v.findViewById(R.id.image)
-        var mItem: LinearLayout = v.findViewById(R.id.item)
 
         init {
             mItem.setOnClickListener(this)
@@ -73,7 +76,7 @@ class RecentNewsAdapter<T>(private var mClickHandler: T): RecyclerView.Adapter<R
         }
 
         override fun onClick(v: View) {
-            listenerRef.get()!!.gotoLink(mData!![adapterPosition].link, mData!![adapterPosition].title)
+            listenerRef.get()!!.openLink(mData!![adapterPosition].link, mData!![adapterPosition].title)
         }
     }
 

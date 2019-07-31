@@ -1,6 +1,7 @@
 package com.github.poscat.rss.viewer.activity
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.Menu
@@ -12,7 +13,6 @@ import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
 import com.github.poscat.rss.viewer.R
 import kotlinx.android.synthetic.main.news.*
-import android.content.Intent
 
 class NewsActivity : AppCompatActivity() {
 
@@ -70,7 +70,7 @@ class NewsActivity : AppCompatActivity() {
             R.id.action_share -> {
                 val intent = Intent(Intent.ACTION_SEND)
                 intent.type = "text/plain"
-                intent.putExtra(Intent.EXTRA_TEXT, mTitle + " - " + mLink)
+                intent.putExtra(Intent.EXTRA_TEXT, "$mTitle - $mLink")
                 val chooser = Intent.createChooser(intent, "링크 공유하기")
                 startActivity(chooser)
                 return true

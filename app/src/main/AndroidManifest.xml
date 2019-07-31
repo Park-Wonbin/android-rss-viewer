@@ -14,15 +14,15 @@
         android:extractNativeLibs="false"
         android:fullBackupContent="@xml/backup_descriptor"
         android:usesCleartextTraffic="true">
-        <activity android:name="com.github.poscat.rss.viewer.activity.FeedActivity">
+        <activity android:name=".activity.FeedActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        
-        <activity android:name="com.github.poscat.rss.viewer.activity.NewsActivity"/>
+    
+        <activity android:name=".activity.NewsActivity" />
         <activity android:name=".activity.RecentNewsActivity"/>
     </application>
 

@@ -90,7 +90,7 @@ class FeedActivity : AppCompatActivity() {
                         continue
                     }
 
-                    obj.items?.sortByDescending { it.published }
+                    obj.items?.sortByDescending { item -> item.published }
                     data[idx].category = obj.title!!
                     data[idx].items = obj.items
                 }
