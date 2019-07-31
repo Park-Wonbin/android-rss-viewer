@@ -6,6 +6,6 @@
 		android:id="@+id/action_share"
 		app:showAsAction="always|collapseActionView"
 		android:icon="@drawable/ic_share"
-		android:title="Share" />
+		android:title="@string/share" />
 	
 </menu>

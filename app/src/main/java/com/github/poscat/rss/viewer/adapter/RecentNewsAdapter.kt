@@ -5,8 +5,8 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -65,7 +65,7 @@ class RecentNewsAdapter<T>(private var mClickHandler: T): RecyclerView.Adapter<R
         var mDescription: TextView = v.findViewById(R.id.description)
         var mCreator_Time: TextView = v.findViewById(R.id.creator_time)
         var mImage: ImageView = v.findViewById(R.id.image)
-        var mItem: FrameLayout = v.findViewById(R.id.item)
+        var mItem: LinearLayout = v.findViewById(R.id.item)
 
         init {
             mItem.setOnClickListener(this)
