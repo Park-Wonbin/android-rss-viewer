@@ -9,8 +9,8 @@ import java.nio.charset.Charset
 import java.security.MessageDigest
 
 class ImageFilter : BitmapTransformation() {
-    private val ID = "com.github.poscat.rss.viewer.utility.ImageFilter"
-    private val ID_BYTES = ID.toByteArray(Charset.forName("UTF-8"))
+    private val _package = "com.github.poscat.rss.viewer.utility.ImageFilter"
+    private val _bytes = _package.toByteArray(Charset.forName("UTF-8"))
 
     public override fun transform(pool: BitmapPool, toTransform: Bitmap, outWidth: Int, outHeight: Int): Bitmap {
         System.loadLibrary("NativeImageProcessor")
@@ -32,10 +32,10 @@ class ImageFilter : BitmapTransformation() {
     }
 
     override fun hashCode(): Int {
-        return ID.hashCode()
+        return _package.hashCode()
     }
 
     override fun updateDiskCacheKey(messageDigest: MessageDigest) {
-        messageDigest.update(ID_BYTES)
+        messageDigest.update(_bytes)
     }
 }

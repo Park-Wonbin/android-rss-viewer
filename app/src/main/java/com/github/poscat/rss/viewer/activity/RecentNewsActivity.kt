@@ -11,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.github.poscat.liveslider.LiveSliderFeed
 import com.github.poscat.rss.viewer.R
 import com.github.poscat.rss.viewer.adapter.RecentNewsAdapter
 import com.github.poscat.rss.viewer.model.Channel
@@ -19,17 +18,16 @@ import com.github.poscat.rss.viewer.model.Item
 import com.github.poscat.rss.viewer.utility.APIClient
 import com.github.ybq.android.spinkit.style.Wave
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.android.synthetic.main.feed.*
 import kotlinx.android.synthetic.main.feed.progressBar
 import kotlinx.android.synthetic.main.recent_news.*
 import kotlinx.android.synthetic.main.recent_news.recycler_view
 import kotlinx.android.synthetic.main.recent_news.swipe_layout
 
-class RecentNewsActivity : AppCompatActivity(), RecentNewsAdapter.listOnClickListener {
+class RecentNewsActivity : AppCompatActivity(), RecentNewsAdapter.ListOnClickListener {
 
     private var mAdapter: RecentNewsAdapter<RecentNewsActivity>? = null
 
-    private val mAPIClient = APIClient()
+    private val mAPIClient = APIClient(100)
     private var mChannelList = arrayOf<Channel>()
     private var mChannelId: Int = 0
 
@@ -62,7 +60,7 @@ class RecentNewsActivity : AppCompatActivity(), RecentNewsAdapter.listOnClickLis
         getRSSData(mChannelId.toString())
     }
 
-    override fun gotoLink(link: String, title: String?) {
+    override fun openLink(link: String, title: String?) {
         val intent = Intent(applicationContext, NewsActivity::class.java)
         intent.putExtra("news_title", title)
         intent.putExtra("news_url", link)
@@ -111,11 +109,11 @@ class RecentNewsActivity : AppCompatActivity(), RecentNewsAdapter.listOnClickLis
 
     private fun getRSSData(id: String) {
         val disposable = CompositeDisposable()
-        val request = mAPIClient.getSelectedChannelCountAPI(id, 100)
+        val request = mAPIClient.getSelectedItemsAPI(Array(1) { id })
 
         disposable.add(request.subscribe({
-            mChannelList = it.items.toTypedArray()
-            mChannelList[0].items?.sortByDescending { it.published }
+            mChannelList = it.toTypedArray()
+            mChannelList[0].items?.sortByDescending { item -> item.published }
             mAdapter?.setData(mChannelList[0].items)
 
             swipe_layout.visibility = View.VISIBLE

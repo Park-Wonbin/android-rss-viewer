@@ -1,4 +1,11 @@
 <resources>
     <string name="app_name">RSS Viewer</string>
-    <string name="empty_content">Not yet Updated...</string>
+    <string name="empty_content">Not yet Updated</string>
+    <string name="item_thumbnail">Item Thumbnail</string>
+    <string name="title">Title</string>
+    <string name="creator">Creator</string>
+    <string name="description">Description</string>
+    <string name="no_results">There are no results to show</string>
+    <string name="search">Search</string>
+    <string name="share">Share</string>
 </resources>

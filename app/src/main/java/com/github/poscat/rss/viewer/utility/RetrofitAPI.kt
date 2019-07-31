@@ -10,12 +10,9 @@ interface RetrofitAPI {
     @GET("/api/v1/channel")
     fun getChannels(): Observable<List<Channel>>
 
-    @GET("/api/v1/channel/items/count/10")
-    fun getChannelsWithItems(): Observable<List<Channel>>
-
-    @GET("/api/v1/channel/items/count/10")
-    fun getSelectedChannelsWithItems(@Query("id") vararg channelId: String): Observable<List<Channel>>
+    @GET("/api/v1/channel/items/count/{count}")
+    fun getChannelsWithItems(@Path("count") count: Int): Observable<List<Channel>>
 
     @GET("/api/v1/channel/items/count/{count}")
-    fun getSelectedChannelCountItems(@Path("count") count: Int, @Query("id") channelId: String): Observable<List<Channel>>
+    fun getSelectedChannelsWithItems(@Path("count") count: Int, @Query("id") vararg channelId: String): Observable<List<Channel>>
 }

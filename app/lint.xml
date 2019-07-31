@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+	<issue id="IconXmlAndPng">
+		<ignore path="src/main/res/drawable-mdpi/ic_action_search.png" />
+	</issue>
+</lint>

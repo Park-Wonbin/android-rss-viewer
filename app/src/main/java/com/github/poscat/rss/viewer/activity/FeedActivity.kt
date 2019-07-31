@@ -27,7 +27,7 @@ import kotlinx.android.synthetic.main.feed.*
 
 class FeedActivity : AppCompatActivity() {
     // for Parsing
-    private val mAPIClient = APIClient()
+    private val mAPIClient = APIClient(10)
 
     // for RecyclerView
     private lateinit var mFeedAdapter: RSSRecyclerViewAdapter
@@ -90,7 +90,7 @@ class FeedActivity : AppCompatActivity() {
                         continue
                     }
 
-                    obj.items?.sortByDescending { it.published }
+                    obj.items?.sortByDescending { item -> item.published }
                     data[idx].category = obj.title!!
                     data[idx].items = obj.items
                 }
