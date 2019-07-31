@@ -27,7 +27,7 @@ class RecentNewsActivity : AppCompatActivity(), RecentNewsAdapter.ListOnClickLis
 
     private var mAdapter: RecentNewsAdapter<RecentNewsActivity>? = null
 
-    private val mAPIClient = APIClient()
+    private val mAPIClient = APIClient(100)
     private var mChannelList = arrayOf<Channel>()
     private var mChannelId: Int = 0
 
@@ -109,10 +109,10 @@ class RecentNewsActivity : AppCompatActivity(), RecentNewsAdapter.ListOnClickLis
 
     private fun getRSSData(id: String) {
         val disposable = CompositeDisposable()
-        val request = mAPIClient.getSelectedChannelsAPI(Array(1) { id }, 100)
+        val request = mAPIClient.getSelectedItemsAPI(Array(1) { id })
 
         disposable.add(request.subscribe({
-            mChannelList = it.items.toTypedArray()
+            mChannelList = it.toTypedArray()
             mChannelList[0].items?.sortByDescending { item -> item.published }
             mAdapter?.setData(mChannelList[0].items)
 

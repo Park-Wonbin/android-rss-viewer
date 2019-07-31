@@ -27,7 +27,7 @@ import kotlinx.android.synthetic.main.feed.*
 
 class FeedActivity : AppCompatActivity() {
     // for Parsing
-    private val mAPIClient = APIClient()
+    private val mAPIClient = APIClient(10)
 
     // for RecyclerView
     private lateinit var mFeedAdapter: RSSRecyclerViewAdapter
@@ -75,8 +75,8 @@ class FeedActivity : AppCompatActivity() {
 
     private fun getRSSData() {
         val disposable = CompositeDisposable()
-        val request = if (mSubscribedChannelList.isEmpty()) mAPIClient.getChannelsAPI(10)
-        else mAPIClient.getSelectedChannelsAPI(mSubscribedChannelList.toTypedArray(), 10)
+        val request = if (mSubscribedChannelList.isEmpty()) mAPIClient.getChannelsAPI()
+        else mAPIClient.getSelectedChannelsAPI(mSubscribedChannelList.toTypedArray())
 
         disposable.add(request.subscribe({
             val data = Array(it.items.size) { LiveSliderFeed<Item, Int>() }
