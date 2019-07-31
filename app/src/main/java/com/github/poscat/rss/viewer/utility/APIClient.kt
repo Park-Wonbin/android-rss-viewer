@@ -27,36 +27,24 @@ class APIClient {
             })
     }
 
-    fun getChannelsAPI(): Observable<Zipper> {
+    fun getChannelsAPI(count: Int): Observable<Zipper> {
         val observe1 = mRetrofitAPI.getChannels()
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
 
-        val observe2 = mRetrofitAPI.getChannelsWithItems()
+        val observe2 = mRetrofitAPI.getChannelsWithItems(count)
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
 
         return createZipper(observe1, observe2)
     }
 
-    fun getSelectedChannelsAPI(ids: Array<String>): Observable<Zipper> {
+    fun getSelectedChannelsAPI(ids: Array<String>, count: Int): Observable<Zipper> {
         val observe1 = mRetrofitAPI.getChannels()
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
 
-        val observe2 = mRetrofitAPI.getSelectedChannelsWithItems(*ids)
-            .subscribeOn(Schedulers.newThread())
-            .observeOn(AndroidSchedulers.mainThread())
-
-        return createZipper(observe1, observe2)
-    }
-
-    fun getSelectedChannelCountAPI(id: String, count: Int): Observable<Zipper> {
-        val observe1 = mRetrofitAPI.getChannels()
-            .subscribeOn(Schedulers.newThread())
-            .observeOn(AndroidSchedulers.mainThread())
-
-        val observe2 = mRetrofitAPI.getSelectedChannelCountItems(count, id)
+        val observe2 = mRetrofitAPI.getSelectedChannelsWithItems(count, *ids)
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
 

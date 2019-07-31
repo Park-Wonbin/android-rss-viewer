@@ -75,8 +75,8 @@ class FeedActivity : AppCompatActivity() {
 
     private fun getRSSData() {
         val disposable = CompositeDisposable()
-        val request = if (mSubscribedChannelList.isEmpty()) mAPIClient.getChannelsAPI()
-        else mAPIClient.getSelectedChannelsAPI(mSubscribedChannelList.toTypedArray())
+        val request = if (mSubscribedChannelList.isEmpty()) mAPIClient.getChannelsAPI(10)
+        else mAPIClient.getSelectedChannelsAPI(mSubscribedChannelList.toTypedArray(), 10)
 
         disposable.add(request.subscribe({
             val data = Array(it.items.size) { LiveSliderFeed<Item, Int>() }
