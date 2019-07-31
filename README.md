@@ -15,7 +15,7 @@ We used our awesome [`Android-Live-Slider`](https://github.com/shhj1998/android-
 Requirements
 ------------
 - Minimum SDK Version : 26
-- Recommended SDK Version : 28
+- Recommended SDK Version : 29
 
 
 Screenshots
