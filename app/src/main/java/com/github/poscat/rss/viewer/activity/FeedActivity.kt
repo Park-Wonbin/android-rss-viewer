@@ -242,6 +242,7 @@ class FeedActivity : AppCompatActivity() {
 
         for (channel in mChannelList) {
             val newItem = LiveSliderFeed<Item, Int>()
+            newItem.id = channel.id
             newItem.category = channel.title ?: getString(R.string.empty_content)
             newItem.items = ArrayList()
 
